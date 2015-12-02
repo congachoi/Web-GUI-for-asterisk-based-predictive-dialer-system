@@ -64,21 +64,28 @@
   }
 	if(isset($_POST['alarm_code']) &&
    $_POST['alarm_code'] == 'code7' && $unchoose_count < '2') {
-	   Print '<h2>Статус : Работа</h2>';
+	   
 	  mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
 	  mysql_select_db("asterisk") or die(mysql_error());
 	  mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_test7' where campaign_id = '92355983'");  
    } 
    	if(isset($_POST['alarm_code']) &&
    $_POST['alarm_code'] == 'code8' && $unchoose_count < '2') {
-	   Print '<h2>Статус : Работа</h2>';
+	   
 	  mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
 	  mysql_select_db("asterisk") or die(mysql_error());
 	  mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_test' where campaign_id = '92355983'");  
    } 
- } else { 
+ }  
+	 mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
+	 mysql_select_db("asterisk") or die(mysql_error());
+	$calls = mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error()); 
+	$status = mysql_fetch_array( $calls );
+	if(empty($status)) {
 	Print '<h2>Статус оповещения: Отключено</h2>';
-		}
+	} else {
+		Print '<h2>Статус : Работа</h2>';
+	}
 	 
 		 ?>
 		 <hr>
