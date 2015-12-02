@@ -5,7 +5,7 @@
 
 <html>
 <head>
-	<title>Система автоматического оповещения</title>
+	<title>Система автоматического оповещения "Сирена"</title>
 	<meta http-equiv="content-type" content="text/html; charset=windows-1251" />
 	<meta http-equiv="Content-Language" content="RU" />
 	<meta http-equiv="imagetoolbar" content="no" />

@@ -36,12 +36,12 @@
  //Обработка формы
  if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-	 
+//Обзвон абонентов	 
 	if(isset($_POST['dial']) &&
    $_POST['dial'] == 'ON') {
  mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
  mysql_select_db("asterisk") or die(mysql_error());
- mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N'");
+ mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N' where list_id = '1001'");
  }else { 
 	$unchoose_count++;
 		}
@@ -60,7 +60,7 @@
 	  mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_test' where campaign_id = '92355983'");  
    } 
    
- 
+//Рассылка почты
  	if(isset($_POST['mail']) &&
    $_POST['mail'] == 'ON') {
 	$subject = '=?utf-8?b?0J/RgNC+0LLQtdGA0LrQsCDRgdC40YHRgtC10LzRiyDQv9C+0YfRgtC+0LLQvtCz0L4g0L7Qv9C+0LLQtdGJ0LXQvdC40Y8=?=';
@@ -85,6 +85,7 @@
 	if(empty($_POST['alarm_code'])) { 
 	Print '<div id="warning">Выбери код оповещения</div>';
 		}	
+}		
  //Статус системы
 	 mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
 	 mysql_select_db("asterisk") or die(mysql_error());
@@ -95,7 +96,7 @@
 	} else {
 		Print '<h2>Статус оповещения: Работа</h2>';
 	}
-}	 
+	 
 		 ?>
 		 <hr>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
@@ -138,7 +139,7 @@
   
   
 <div class="boxads">Прототип системы оповещения.
- Версия 0.3<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 0.4<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
 2015г. ,СЦС. <a href="mailto:@utg.gazprom.ru"></a></div>
 			</div>
