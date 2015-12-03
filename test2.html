@@ -32,83 +32,13 @@
 	<div align=center>	<h2>Запуск системы автоматического оповещения</h2></div><br>
 		
 
- <?php
- //Mysql
- $mysql = mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
- mysql_select_db("asterisk") or die(mysql_error());
- 
- //Обработка формы
- if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-//Обзвон абонентов	 
-	if(isset($_POST['dial']) &&
-   $_POST['dial'] == 'ON') {
-	mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N' where list_id ='". $_POST['list_code']."'") or die(mysql_error());
-	}else { 
-	$unchoose_count++;
-		}
-//Выбор кода оповещения		
-	if(isset($_POST['alarm_code']) && $unchoose_count < '2') {	     
-    switch ($_POST['alarm_code']) {
-    case "code_test":
-        mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_UC_testalarm' where campaign_id = '92355983'") or die(mysql_error());
-        break;
-    case "code8":
-        mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_test' where campaign_id = '92355983'") or die(mysql_error());
-        break;
-	}
-   }
-//Рассылка почты
- 	if(isset($_POST['mail']) &&
-   $_POST['mail'] == 'ON'  && isset($_POST['message'])){
-	$subject = '=?utf-8?b?0J/RgNC+0LLQtdGA0LrQsCDRgdC40YHRgtC10LzRiyDQv9C+0YfRgtC+0LLQvtCz0L4g0L7Qv9C+0LLQtdGJ0LXQvdC40Y8=?=';
-        $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
-        'Content-Type: text/html; charset=UTF-8' .
-        'X-Mailer: PHP/' . phpversion();
-    $mail = mysql_query("select email from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error());    
-		while($email = mysql_fetch_array( $mail )) 
-		{ 
-		mail($email['email'], $subject, $_POST['message'], $headers);
-		} 
-	}else { 
-	$unchoose_count++;
-		}
-//Проверка ввода
- if($unchoose_count == '2'){
-  Print '<div id="warning">Выбери способ оповещения</div>';
-  }
-	if(empty($_POST['alarm_code'])) { 
-	Print '<div id="warning">Выбери код оповещения</div>';
-		}	
-			if(empty($_POST['list_code'])) { 
-		Print '<div id="warning">Выбери список абонентов</div>';
-			}	
-}		
- //Статус системы
-	$calls = mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error()); 
-	$status = mysql_fetch_array( $calls );
-	if(empty($status)) {
-	Print '<h2>Статус оповещения: Отключено</h2>';
-	} else {
-		Print '<h2>Статус оповещения: Работа</h2>';
-	}
-	 mysql_close($mysql);
-		 ?>
-		 <hr>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
+ 		 <hr>
+<form method="post" action="index.html">		 
 <p>
 <h2>Укажи список абонентов:</h2>
 <select name="list_code"> 
   <option value="">Выбор...</option>
- <?php 
- //Список абонентов
- $data = mysql_query("select list_id,list_name from vicidial_lists") or die(mysql_error());
-  while($list_data = mysql_fetch_array( $data )) 
- { 
-  Print "<option value=".$list_data['list_id'].">".$list_data['list_name']."</option>";
-}
-  ?>
-</select>
+ </select>
 </p>
 <hr>
 <p>
@@ -157,7 +87,7 @@
   
   
 <div class="boxads">Прототип системы оповещения.
- Версия 0.5.3<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 0.5.2<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2015г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>
 		<div class="leftmenu">
