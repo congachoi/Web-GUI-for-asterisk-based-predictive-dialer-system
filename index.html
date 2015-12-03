@@ -33,30 +33,26 @@
 		
 
  <?php
+ //Mysql
+ $mysql = mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
+ mysql_select_db("asterisk") or die(mysql_error());
+ 
  //Обработка формы
  if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 //Обзвон абонентов	 
 	if(isset($_POST['dial']) &&
    $_POST['dial'] == 'ON') {
- mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
- mysql_select_db("asterisk") or die(mysql_error());
- mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N' where list_id = '1001'");
- }else { 
+	mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N' where list_id = '1001'");
+	}else { 
 	$unchoose_count++;
 		}
 	if(isset($_POST['alarm_code']) &&
    $_POST['alarm_code'] == 'code7' && $unchoose_count < '2') {
-	   
-	  mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
-	  mysql_select_db("asterisk") or die(mysql_error());
-	  mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_test7' where campaign_id = '92355983'");  
+	   mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_test7' where campaign_id = '92355983'");  
    } 
    	if(isset($_POST['alarm_code']) &&
    $_POST['alarm_code'] == 'code8' && $unchoose_count < '2') {
-	   
-	  mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
-	  mysql_select_db("asterisk") or die(mysql_error());
 	  mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_test' where campaign_id = '92355983'");  
    } 
    
@@ -68,9 +64,7 @@
         $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
         'X-Mailer: PHP/' . phpversion();
-    mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
-	mysql_select_db("asterisk") or die(mysql_error());
-	$mail = mysql_query("select email from vicidial_list where list_id = 1000");    
+    $mail = mysql_query("select email from vicidial_list where list_id = 1000");    
 		while($email = mysql_fetch_array( $mail )) 
 		{ 
 		mail($email['email'], $subject, $message, $headers);
@@ -87,8 +81,6 @@
 		}	
 }		
  //Статус системы
-	 mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
-	 mysql_select_db("asterisk") or die(mysql_error());
 	$calls = mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error()); 
 	$status = mysql_fetch_array( $calls );
 	if(empty($status)) {
@@ -96,7 +88,7 @@
 	} else {
 		Print '<h2>Статус оповещения: Работа</h2>';
 	}
-	 
+	 mysql_close($mysql);
 		 ?>
 		 <hr>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
