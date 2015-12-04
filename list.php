@@ -12,7 +12,6 @@
 	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta name="description" content="LGBlue Free Css Template" />
 	<meta name="keywords" content="free,css,template,business" />
-	<META HTTP-EQUIV="refresh" CONTENT="15">
 	<style type="text/css" media="all">@import "images/style.css";</style>
 	
 </head>
@@ -23,14 +22,14 @@
 <div class="content">
 	<div id="toph"></div>
 	<div id="header">
-	
+	<div align=center>	<h2>Статус вызовов в системе автоматического оповещения</h2></div>
 	</div>
 	<div id="main">
 		<div class="center">
 
-<br>
 
-	<div align=center>	<h2>Статус вызовов в системе автоматического оповещения</h2></div><br>
+
+	
 		
 <hr>
 <?php 
@@ -72,7 +71,7 @@ mysql_select_db("asterisk") or die(mysql_error());
 <div align=center><input type="submit" name="submit" value="Показать"></div>
 </form>
 <div class="boxads">Прототип системы оповещения.
- Версия 0.5.2<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 0.5.3<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
 2015г. ,СЦС. <a href="mailto:@utg.gazprom.ru"></a></div>
 			</div>
