@@ -7,11 +7,11 @@ body { margin:5px 0; padding:0; font: 74% Arial, Sans-Serif; color:#000; line-he
 .content { color: #505050; margin: 0 auto; padding: 0; width: 791px; background: #FFFFFF url(bg.jpg) repeat-y center; }
 
 #toph { background: #F0F0F0 url(top.jpg) no-repeat center top; height: 14px; margin: 0; padding: 0;}
-#header { color: #FFF; padding: 0 15px 0 15px; line-height: 1.0em; }
+#header { color: #057AC0; padding: 0 15px 0 15px; line-height: 1.0em; }
 	#header .rside { background: #017fd3 url(top_name.png) no-repeat; margin-top: 15px; color: #337493; float: right; height: 110px; width: 587px;  font-size: 90%; }
 	#header .citation { text-align: right; padding: 60px 25px 25px 6px; color: #f0f0f0;}
 	#header .lside { background: url(top_logo.jpg) no-repeat; color: #FFF; height: 88px; width: 159px; padding: 0; margin: 0; float: left; }
-	#header h2 { background-color: inherit; color: #FFF; letter-spacing: 1px; }
+	#header h2 { background-color: inherit; color: #057AC0; letter-spacing: 1px; }
 	#header .title { text-align: center; padding-top: 30px;}
 #warning {font: 185% Arial, Sans-Serif; border: 1px solid #eee; background: #FFFFF4; color: #FF000F; }
 #main { margin: 0 20px 0 15px; }	

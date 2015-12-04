@@ -22,15 +22,10 @@
 <div class="content">
 	<div id="toph"></div>
 	<div id="header">
-	
+	<div align=center>Запуск системы автоматического оповещения</div>
 	</div>
 	<div id="main">
 		<div class="center">
-
-<br>
-
-	<div align=center>	<h2>Запуск системы автоматического оповещения</h2></div><br>
-		
 
  <?php
  //Mysql
@@ -92,7 +87,7 @@
 	} else {
 		Print '<h2>Статус оповещения: Работа</h2>';
 	}
-	 mysql_close($mysql);
+	 
 		 ?>
 		 <hr>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
@@ -107,6 +102,7 @@
  { 
   Print "<option value=".$list_data['list_id'].">".$list_data['list_name']."</option>";
 }
+mysql_close($mysql);
   ?>
 </select>
 </p>
