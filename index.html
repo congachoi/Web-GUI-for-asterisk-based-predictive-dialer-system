@@ -22,11 +22,12 @@
 <div class="content">
 	<div id="toph"></div>
 	<div id="header">
-	<div align=center>Запуск системы автоматического оповещения</div>
+	
 	</div>
 	<div id="main">
 		<div class="center">
-
+<div align=center><h2>Запуск системы автоматического оповещения</h2></div>
+<hr>
  <?php
  //Mysql
  $mysql = mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
@@ -43,20 +44,15 @@
 	$unchoose_count++;
 		}
 //Выбор кода оповещения		
-	if(isset($_POST['alarm_code']) && $unchoose_count < '2') {	     
-    switch ($_POST['alarm_code']) {
-    case "code_test":
-        mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_UC_testalarm' where campaign_id = '92355983'") or die(mysql_error());
-        break;
-    case "code8":
-        mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_test' where campaign_id = '92355983'") or die(mysql_error());
-        break;
-	}
+	if(isset($_POST['alarm_code']) && $unchoose_count < '3') {	     
+
+        mysql_query("update vicidial_campaigns set survey_first_audio_file = '".$file."' where campaign_id = '92355983'") or die(mysql_error());
+     
    }
 //Рассылка почты
  	if(isset($_POST['mail']) &&
    $_POST['mail'] == 'ON'  && isset($_POST['message'])){
-	$subject = '=?utf-8?b?0J/RgNC+0LLQtdGA0LrQsCDRgdC40YHRgtC10LzRiyDQv9C+0YfRgtC+0LLQvtCz0L4g0L7Qv9C+0LLQtdGJ0LXQvdC40Y8=?=';
+	$subject = '=?utf-8?b?'.base64_encode($_POST['header']).'?=';
         $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
         'X-Mailer: PHP/' . phpversion();
@@ -68,15 +64,29 @@
 	}else { 
 	$unchoose_count++;
 		}
-//Проверка ввода
- if($unchoose_count == '2'){
+//Рассылка sms
+ 	if(isset($_POST['sms']) &&
+   $_POST['sms'] == 'ON'  && isset($_POST['message'])){
+	$phone_number = mysql_query("select alt_phone from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error());    
+		while($phone = mysql_fetch_array( $phone_number )) 
+		{ 
+		exec('echo "'.$_POST['message'].'" | gammu --sendsms TEXT '.$phone.' -unicode');
+		} 
+	}else { 
+	$unchoose_count++;
+		}		
+//Вывод ошибок
+ if($unchoose_count == '3'){
   Print '<div id="warning">Выбери способ оповещения</div>';
   }
-	if(empty($_POST['alarm_code'])) { 
+	if(empty($_POST['alarm_code']) && isset($_POST['dial'])) { 
 	Print '<div id="warning">Выбери код оповещения</div>';
 		}	
 			if(empty($_POST['list_code'])) { 
 		Print '<div id="warning">Выбери список абонентов</div>';
+			}	
+			if(empty($_POST['message']) && isset($_POST['mail'])) { 
+		Print '<div id="warning">Введи текст сообщения</div>';
 			}	
 }		
  //Статус системы
@@ -110,9 +120,17 @@ mysql_close($mysql);
 <p>
 <h2>Укажи код оповещения:</h2>
 <select name="alarm_code">
-  <option value="">Выбор...</option>
-  <option value="code_test">Проверка УС</option>
-  <option value="code8">Проверка 1</option>
+<?php 
+ //Список файлов
+ 
+  foreach(scandir("/var/lib/asterisk/sounds") as $file) 
+ { 
+	 if (preg_match("/go_/i", $file)) {
+	 $name=preg_split("/[\.,]+/", $file);
+         Print "<option value=".$name[0].">".$name[0]."</option>";
+ }
+}
+  ?>
 </select>
 </p>
 <hr>
@@ -134,9 +152,12 @@ mysql_close($mysql);
 </TR>
  </table>
  <hr>
- <h2>Введи текст сообщения:</h2>
+ <h2>Настройки текстового оповещения:</h2>
 <input class="spoilerbutton" type="button" value="Показать" onclick="this.value=this.value=='Показать'?'Скрыть':'Показать';">
 <div class="spoiler"><div>
+	<h2>Введи тему сообщения:</h2>
+<input type="text" name="header" value="Тест"  size="64">
+<h2>Введи текст сообщения:</h2>
 <textarea name="message" rows="5" cols="74"></textarea>
 </div></div>
 					

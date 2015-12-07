@@ -22,12 +22,12 @@
 <div class="content">
 	<div id="toph"></div>
 	<div id="header">
-	<div align=center>	<h2>Статус вызовов в системе автоматического оповещения</h2></div>
+	
 	</div>
 	<div id="main">
 		<div class="center">
 
-
+<div align=center>	<h2>Статус вызовов в системе автоматического оповещения</h2></div>
 
 	
 		
@@ -61,7 +61,12 @@ mysql_select_db("asterisk") or die(mysql_error());
  $list = mysql_query("select list_id,list_name from vicidial_lists") or die(mysql_error());
   while($list_data = mysql_fetch_array( $list )) 
  { 
-  Print "<option value=".$list_data['list_id'].">".$list_data['list_name']."</option>";
+  if (isset($_POST['list_code']) &&
+   $_POST['list_code'] == $list_data['list_id']) {
+  Print "<option value=".$list_data['list_id']." selected>".$list_data['list_name']."</option>";
+ } else {
+	 Print "<option value=".$list_data['list_id'].">".$list_data['list_name']."</option>";
+ }
 }
  mysql_close($mysql);
   ?>
@@ -90,7 +95,7 @@ mysql_select_db("asterisk") or die(mysql_error());
 			<br>
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.101.132" target="_blank">Autodialme</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.167.14" target="_blank">Freepbx</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/alarm.php" target="_blank">Запуск системы</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/alarm.php" target="_blank">Запуск системы</a> <br />
 
 
 
