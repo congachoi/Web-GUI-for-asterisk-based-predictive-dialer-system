@@ -46,7 +46,7 @@
 //Выбор кода оповещения		
 	if(isset($_POST['alarm_code']) && $unchoose_count < '3') {	     
 
-        mysql_query("update vicidial_campaigns set survey_first_audio_file = '".$file."' where campaign_id = '92355983'") or die(mysql_error());
+        mysql_query("update vicidial_campaigns set survey_first_audio_file = '".$_POST['alarm_code']."' where campaign_id = '92355983'") or die(mysql_error());
      
    }
 //Рассылка почты
@@ -66,11 +66,15 @@
 		}
 //Рассылка sms
  	if(isset($_POST['sms']) &&
-   $_POST['sms'] == 'ON'  && isset($_POST['message'])){
-	$phone_number = mysql_query("select alt_phone from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error());    
-		while($phone = mysql_fetch_array( $phone_number )) 
+   $_POST['sms'] == 'ON' && isset($_POST['message'])){
+	$phone_number = mysql_fetch_array( mysql_query("select alt_phone from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()));    
+		foreach(preg_split("/[\9,]+/", $phone_number , 2) as $phone ) 
 		{ 
-		exec('echo "'.$_POST['message'].'" | gammu --sendsms TEXT '.$phone.' -unicode');
+                $locale='ru_RU.UTF-8';
+                setlocale(LC_ALL,$locale);
+                putenv('LC_ALL='.$locale);
+                exec('echo "'.$_POST['message'].'" | gammu --sendsms TEXT '.$phone[1].' -unicode');
+
 		} 
 	}else { 
 	$unchoose_count++;
@@ -87,11 +91,18 @@
 			}	
 			if(empty($_POST['message']) && isset($_POST['mail'])) { 
 		Print '<div id="warning">Введи текст сообщения</div>';
-			}	
+			} elseif (empty($_POST['message']) && isset($_POST['sms'])) { 
+		Print '<div id="warning">Введи текст сообщения</div>';
+			}		
+//Запись в журнал
+if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_code'])){
+	date_default_timezone_set('GMT+3');
+	mysql_query('insert into alarm_journal values("'.date("Y-m-d H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_code'].'")') or die(mysql_error());
+}
 }		
  //Статус системы
-	$calls = mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error()); 
-	$status = mysql_fetch_array( $calls );
+	
+	$status = mysql_fetch_array( mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error()) );
 	if(empty($status)) {
 	Print '<h2>Статус оповещения: Отключено</h2>';
 	} else {
@@ -120,6 +131,7 @@ mysql_close($mysql);
 <p>
 <h2>Укажи код оповещения:</h2>
 <select name="alarm_code">
+	<option value="">Выбор...</option>
 <?php 
  //Список файлов
  
@@ -156,9 +168,9 @@ mysql_close($mysql);
 <input class="spoilerbutton" type="button" value="Показать" onclick="this.value=this.value=='Показать'?'Скрыть':'Показать';">
 <div class="spoiler"><div>
 	<h2>Введи тему сообщения:</h2>
-<input type="text" name="header" value="Тест"  size="64">
+<input type="text" name="header" value="Проверка системы оповещения."  size="64">
 <h2>Введи текст сообщения:</h2>
-<textarea name="message" rows="5" cols="74"></textarea>
+<textarea name="message" rows="5" cols="74">Проверка системы оповещения.</textarea>
 </div></div>
 					
  <hr>
