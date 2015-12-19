@@ -67,9 +67,11 @@
 //Рассылка sms
  	if(isset($_POST['sms']) &&
    $_POST['sms'] == 'ON' && isset($_POST['message'])){
-	$phone_number = mysql_fetch_array( mysql_query("select alt_phone from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()));    
-		foreach(preg_split("/[\9,]+/", $phone_number , 2) as $phone ) 
+	$sql_data = mysql_query("select alt_phone from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
+	    
+		while (  $phone_number = mysql_fetch_array( $sql_data ) ) 
 		{ 
+			$phone  = preg_split("/[\9,]+/", $phone_number['alt_phone'] , 2);
                 $locale='ru_RU.UTF-8';
                 setlocale(LC_ALL,$locale);
                 putenv('LC_ALL='.$locale);
@@ -205,8 +207,8 @@ mysql_close($mysql);
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.101.132" target="_blank">Autodialme</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.167.14" target="_blank">Freepbx</a> <br />
 <img src="images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Статус вызовов</a> <br />
-
-
+<img src="images/arrow.gif" alt="" /> <a href="/vicidial/admin_listloader_fourth_gen.php" target="_blank">Добавление списков</a> <br />
+<img src="images/arrow.gif" alt="" /> <a href="/audiostore" target="_blank">Добавление файлов</a> <br />
 			</div>
 			</div>
 		</div>
