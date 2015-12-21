@@ -65,8 +65,10 @@ if (isset ($_POST['stop'])) {
     $mail = mysql_query("select email from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error());    
 		while($email = mysql_fetch_array( $mail )) 
 		{ 
-			if($email['email'] != '') {
+			if($email['email'] != '' && empty($_POST['stop'])) {
 			mail($email['email'], $subject, $_POST['message'], $headers);
+			} else {
+			break;
 			}
 		} 
 	}else { 
@@ -79,13 +81,15 @@ if (isset ($_POST['stop'])) {
 	    
 		while (  $phone_number = mysql_fetch_array( $sql_data ) ) 
 		{ 
-                if($phone_number['alt_phone'] != '') {
+                if($phone_number['alt_phone'] != '' && empty($_POST['stop'])) {
                 $phone  = preg_split("/[\9,]+/", $phone_number['alt_phone'] , 2);
                 $locale='ru_RU.UTF-8';
                 setlocale(LC_ALL,$locale);
                 putenv('LC_ALL='.$locale);
                 exec('echo "'.$_POST['message'].'" | gammu --sendsms TEXT '.$phone[1].' -unicode');
-                }
+                } else {
+				break;
+				}
 		} 
 	}else { 
 	$unchoose_count++;
