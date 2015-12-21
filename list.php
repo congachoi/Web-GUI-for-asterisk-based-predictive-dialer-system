@@ -39,14 +39,17 @@ mysql_select_db("asterisk") or die(mysql_error());
  
  $data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error()); 
  Print "<table border cellpadding=3 style=width:100% algin=center>";
- Print "<th>Номер:</th><th>Имя:</th><th>Время:</th> <th>Статус:</th> "; 
+ Print "<th>№</th><th>Номер телефона:</th><th>Имя:</th><th>Время:</th> <th>Статус:</th> "; 
+ $number = 1;
  while($info = mysql_fetch_array( $data )) 
  { 
  Print "<tr>"; 
+ Print "<td>".$number . "</td> "; 
  Print "<td>".$info['phone_number'] . "</td> "; 
  Print "<td>".$info['first_name'] . "</td> "; 
  Print "<td>".$info['last_local_call_time'] . "</td> "; 
  Print "<td>".$info['status'] . " </td></tr>"; 
+ $number = $number + 1; 
  } 
  Print "</table>"; 
 }

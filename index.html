@@ -34,24 +34,30 @@
  mysql_select_db("asterisk") or die(mysql_error());
  
  //Обработка формы
- if ($_SERVER["REQUEST_METHOD"] == "POST") {
+ if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
+
+//Остановка системы
+if (isset ($_POST['stop'])) {
+	mysql_query("update vicidial_list set status = 'SP' where status !='PM'") or die(mysql_error());
+	print '<div id="warning">АВАРИЙНАЯ ОСТАНОВКА</div>';
+}
 
 //Обзвон абонентов	 
 	if(isset($_POST['dial']) &&
-   $_POST['dial'] == 'ON') {
+   $_POST['dial'] == 'ON'  && empty($_POST['stop']) ) {
 	mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N' where list_id ='". $_POST['list_code']."'") or die(mysql_error());
 	}else { 
 	$unchoose_count++;
 		}
 //Выбор кода оповещения		
-	if(isset($_POST['alarm_code']) && $unchoose_count < '3') {	     
+	if(isset($_POST['alarm_code']) && $unchoose_count < '3' && empty($_POST['stop'])) {	     
 
         mysql_query("update vicidial_campaigns set survey_first_audio_file = '".$_POST['alarm_code']."' where campaign_id = '92355983'") or die(mysql_error());
      
    }
 //Рассылка почты
  	if(isset($_POST['mail']) &&
-   $_POST['mail'] == 'ON'  && isset($_POST['message'])){
+   $_POST['mail'] == 'ON'  && isset($_POST['message']) && empty($_POST['stop'])){
 	$subject = '=?utf-8?b?'.base64_encode($_POST['header']).'?=';
         $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
@@ -59,52 +65,55 @@
     $mail = mysql_query("select email from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error());    
 		while($email = mysql_fetch_array( $mail )) 
 		{ 
-		mail($email['email'], $subject, $_POST['message'], $headers);
+			if($email['email'] != '') {
+			mail($email['email'], $subject, $_POST['message'], $headers);
+			}
 		} 
 	}else { 
 	$unchoose_count++;
 		}
 //Рассылка sms
  	if(isset($_POST['sms']) &&
-   $_POST['sms'] == 'ON' && isset($_POST['message'])){
+   $_POST['sms'] == 'ON' && isset($_POST['message'])  && empty($_POST['stop'])){
 	$sql_data = mysql_query("select alt_phone from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
 	    
 		while (  $phone_number = mysql_fetch_array( $sql_data ) ) 
 		{ 
-			$phone  = preg_split("/[\9,]+/", $phone_number['alt_phone'] , 2);
+                if($phone_number['alt_phone'] != '') {
+                $phone  = preg_split("/[\9,]+/", $phone_number['alt_phone'] , 2);
                 $locale='ru_RU.UTF-8';
                 setlocale(LC_ALL,$locale);
                 putenv('LC_ALL='.$locale);
                 exec('echo "'.$_POST['message'].'" | gammu --sendsms TEXT '.$phone[1].' -unicode');
-
+                }
 		} 
 	}else { 
 	$unchoose_count++;
 		}		
 //Вывод ошибок
- if($unchoose_count == '3'){
+ if($unchoose_count == '3' && empty($_POST['stop'])){
   Print '<div id="warning">Выбери способ оповещения</div>';
   }
-	if(empty($_POST['alarm_code']) && isset($_POST['dial'])) { 
+	if(empty($_POST['alarm_code']) && isset($_POST['dial']) && empty($_POST['stop'])) { 
 	Print '<div id="warning">Выбери код оповещения</div>';
 		}	
-			if(empty($_POST['list_code'])) { 
+			if(empty($_POST['list_code']) && empty($_POST['stop'])) { 
 		Print '<div id="warning">Выбери список абонентов</div>';
 			}	
-			if(empty($_POST['message']) && isset($_POST['mail'])) { 
+			if(empty($_POST['message']) && isset($_POST['mail']) && empty($_POST['stop'])) { 
 		Print '<div id="warning">Введи текст сообщения</div>';
-			} elseif (empty($_POST['message']) && isset($_POST['sms'])) { 
+			} elseif (empty($_POST['message']) && isset($_POST['sms']) && empty($_POST['stop'])) { 
 		Print '<div id="warning">Введи текст сообщения</div>';
 			}		
 //Запись в журнал
-if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_code'])){
-	date_default_timezone_set('GMT+3');
+if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_code']) && empty($_POST['stop'])){
+	date_default_timezone_set('GMT+2');
 	mysql_query('insert into alarm_journal values("'.date("Y-m-d H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_code'].'")') or die(mysql_error());
 }
 }		
  //Статус системы
-	
-	$status = mysql_fetch_array( mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error()) );
+	$sql_data2 = mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error());
+	$status = mysql_fetch_array( $sql_data2 );
 	if(empty($status)) {
 	Print '<h2>Статус оповещения: Отключено</h2>';
 	} else {
@@ -178,7 +187,9 @@ mysql_close($mysql);
  <hr>
  <table border=0 cellpadding=4 algin=center > 
   <TR> 
-  <TD BGCOLOR="#FF0000"><h2>---->>>><input type="submit" name="submit" value="Запуск"> <<<<---- </h2></TD>
+	  <TD BGCOLOR="#FF0000"><input type="submit" name="submit" value="СТАРТ"></TD>
+	  <TD BGCOLOR="#FF0000"><input type="submit" name="stop" value="СТОП"></TD>
+	  <TD BGCOLOR="#FF0000"><input type="reset" value="СБРОС"></TD>
   </TR>
   </table>
 </form>
