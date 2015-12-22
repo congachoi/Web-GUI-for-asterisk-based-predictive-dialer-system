@@ -133,7 +133,7 @@ if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_co
   <option value="">Выбор...</option>
  <?php 
  //Список абонентов
- $data = mysql_query("select list_id,list_name from vicidial_lists") or die(mysql_error());
+ $data = mysql_query("select list_id,list_name from vicidial_lists where list_id != '1001'") or die(mysql_error());
   while($list_data = mysql_fetch_array( $data )) 
  { 
   Print "<option value=".$list_data['list_id'].">".$list_data['list_name']."</option>";
