@@ -43,9 +43,10 @@ if (isset ($_POST['stop'])) {
 }
 
 //Обзвон абонентов	 
-	if(isset($_POST['dial']) &&
-   $_POST['dial'] == 'ON'  && empty($_POST['stop']) ) {
+	if($_POST['dial'] == 'ON'  && empty($_POST['stop']) && $_POST['alarm_code'] != '' ) {
+	   
 	mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N' where list_id ='". $_POST['list_code']."'") or die(mysql_error());
+	
 	}else { 
 	$unchoose_count++;
 		}
@@ -56,8 +57,7 @@ if (isset ($_POST['stop'])) {
      
    }
 //Рассылка почты
- 	if(isset($_POST['mail']) &&
-   $_POST['mail'] == 'ON'  && isset($_POST['message']) && empty($_POST['stop'])){
+ 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['message'] != '' && empty($_POST['stop'])){
 	$subject = '=?utf-8?b?'.base64_encode($_POST['header']).'?=';
         $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
@@ -75,8 +75,7 @@ if (isset ($_POST['stop'])) {
 	$unchoose_count++;
 		}
 //Рассылка sms
- 	if(isset($_POST['sms']) &&
-   $_POST['sms'] == 'ON' && isset($_POST['message'])  && empty($_POST['stop'])){
+ 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['message'] != '' && empty($_POST['stop'])){
 	$sql_data = mysql_query("select alt_phone from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
 	    
 		while (  $phone_number = mysql_fetch_array( $sql_data ) ) 
@@ -222,6 +221,7 @@ mysql_close($mysql);
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.101.132" target="_blank">Autodialme</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.167.14" target="_blank">Freepbx</a> <br />
 <img src="images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Статус вызовов</a> <br />
+<img src="images/arrow.gif" alt="" /> <a href="/sirena/broadcast.php" target="_blank">Этажное оповещение</a> <br />
 <img src="images/arrow.gif" alt="" /> <a href="/vicidial/admin_listloader_fourth_gen.php" target="_blank">Добавление списков</a> <br />
 <img src="images/arrow.gif" alt="" /> <a href="/audiostore" target="_blank">Добавление файлов</a> <br />
 			</div>
