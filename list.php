@@ -37,7 +37,8 @@ $mysql = mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error())
 mysql_select_db("asterisk") or die(mysql_error());
  if($_POST['list_code'] != '' ){
  
- $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error()); 
+ $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error());
+ $count=0; 
  while($raw = mysql_fetch_array( $sql_data )){
 	 $total++;
  if($raw['status'] == PM || $raw['status'] == PU){
@@ -71,7 +72,7 @@ $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,sta
  Print "<td>".$info['first_name'] . "</td> "; 
  Print "<td>".$info['last_local_call_time'] . "</td> "; 
  Print "<td>".$status. " </td></tr>"; 
- $number = $number + 1; 
+ $number++; 
  } 
  Print "</table>"; 
 }

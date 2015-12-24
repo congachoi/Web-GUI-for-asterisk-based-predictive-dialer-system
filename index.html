@@ -67,9 +67,10 @@ if (isset ($_POST['stop'])) {
 		{ 
 			if($email['email'] != '' && empty($_POST['stop'])) {
 			mail($email['email'], $subject, $_POST['message'], $headers);
-			} else {
+			} elseif (isset($_POST['stop'])){
 			break;
 			}
+		} 
 		} 
 	}else { 
 	$unchoose_count++;
@@ -85,8 +86,8 @@ if (isset ($_POST['stop'])) {
                 $locale='ru_RU.UTF-8';
                 setlocale(LC_ALL,$locale);
                 putenv('LC_ALL='.$locale);
-                exec('echo "'.$_POST['message'].'" | gammu --sendsms TEXT '.$phone[1].' -unicode');
-                } else {
+                exec('echo "'.$_POST['message'].'" | gammu --sendsms TEXT '.$phone[1].' -unicode -16bit -len 400'); 
+                } elseif (isset($_POST['stop'])){
 				break;
 				}
 		} 
