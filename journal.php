@@ -27,79 +27,39 @@
 	<div id="main">
 		<div class="center">
 
-<div align=center>	<h2>Статус вызовов в системе автоматического оповещения</h2></div>
+<div align=center>	<h2>Журнал системы автоматического оповещения</h2></div>
 
-<hr>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">	
-	<table border cellpadding=3 style=width:100% algin=center>
-<th><h2>Укажи список абонентов:</h2></th>
-<th><select name="list_code">
-  <option value="">Выбор...</option>	
 	
+		
+<hr>
 <?php 
 $mysql = mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
 mysql_select_db("asterisk") or die(mysql_error());
-  //Список абонентов
- $list = mysql_query("select list_id,list_name from vicidial_lists") or die(mysql_error());
-  while($list_data = mysql_fetch_array( $list )) 
- { 
-  if (isset($_POST['list_code']) &&
-   $_POST['list_code'] == $list_data['list_id']) {
-  Print "<option value=".$list_data['list_id']." selected>".$list_data['list_name']."</option>";
- } else {
-	 Print "<option value=".$list_data['list_id'].">".$list_data['list_name']."</option>";
- }
-}
-print '</select></th><th><input type="submit" name="submit" value="Показать"></th></table></form>';
- if($_POST['list_code'] != '' ){
  
- $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error());
- $count=0; 
- $total=0;
- while($raw = mysql_fetch_array( $sql_data )){
-	 $total++;
- if($raw['status'] == PM || $raw['status'] == PU){
-	 $count++;
- }
-}
-$sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error());
-  Print '<div id="warning">Абонентов обработано: '.$count.' |  Абонентов всего: '.$total.'</div>';
+ 
+$sql_data = mysql_query("select * from alarm_journal") or die(mysql_error());
+  
  Print "<table border cellpadding=3 style=width:100% algin=center>";
- Print "<th>№</th><th>Номер телефона:</th><th>ФИО:</th><th>Время:</th> <th>Статус:</th> "; 
+ Print "<th>№</th><th>Дата:</th><th>IP:</th><th>Пользователь:</th><th>Dial</th><th>Mail</th><th>SMS</th><th>Код оповещения</th><th>Список абонентов</th> "; 
  $number = 1;
  while($info = mysql_fetch_array( $sql_data )) 
  { 
-	 switch ($info['status'] ) {
-		 case "PM":
-			$status = "Сообщение прослушано";
-			break;
-		 case "PU":
-			$status = "Сообщение недослушано";
-			break;	
-		 case "NA":
-			$status = "Нет ответа";
-			break;	
-		 case "B":
-			$status = "Абонент занят";
-			break;
-		 case "SP":
-			$status = "Остановлено";
-			break;	 
-	 }
  Print "<tr>"; 
  Print "<td>".$number . "</td> "; 
- Print "<td>".$info['phone_number'] . "</td> "; 
- Print "<td>".$info['first_name'] . "</td> "; 
- Print "<td>".$info['last_local_call_time'] . "</td> "; 
- Print "<td>".$status. " </td></tr>"; 
+ Print "<td>".$info['data'] . "</td> "; 
+ Print "<td>".$info['IP'] . "</td> "; 
+ Print "<td>".$info['username'] . " </td>";
+ Print "<td>".$info['dial'] . "</td> "; 
+ Print "<td>".$info['mail'] . "</td> ";
+ Print "<td>".$info['sms'] . "</td> ";
+ Print "<td>".$info['alarm_code'] . "</td> ";
+ Print "<td>".$info['alarm_code'] . " </td></tr>"; 
+ 
  $number++; 
  } 
  Print "</table>"; 
-}
- 
 
- mysql_close($mysql);
-  ?>
+ ?> <hr>
 
 <div class="boxads">Прототип системы оповещения.
  Версия 0.5.3<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
