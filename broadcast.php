@@ -63,7 +63,7 @@ if (isset ($_POST['stop'])) {
 		Print '<h2>Статус внутреннего оповещения: Отключено</h2>';
 	}
 	 
-		 ?>
+	mysql_close($mysql);	 ?>
 		 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
 <hr>

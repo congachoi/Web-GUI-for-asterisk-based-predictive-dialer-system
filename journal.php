@@ -58,7 +58,7 @@ $sql_data = mysql_query("select * from alarm_journal") or die(mysql_error());
  $number++; 
  } 
  Print "</table>"; 
-
+mysql_close($mysql);
  ?> <hr>
 
 <div class="boxads">Прототип системы оповещения.
