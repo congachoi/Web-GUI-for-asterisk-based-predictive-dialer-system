@@ -51,8 +51,10 @@ mysql_select_db("asterisk") or die(mysql_error());
  }
 }
 print '</select></th><th><input type="submit" name="submit" value="Показать"></th></table></form>';
- if($_POST['list_code'] != '' ){
  
+ function print_table(){
+	 $size_fp = 1 * 1024 * 1024;
+$fp = fopen("php://temp/maxmemory:$size_fp", 'r+');
  $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error());
  $count=0; 
  $total=0;
@@ -62,11 +64,11 @@ print '</select></th><th><input type="submit" name="submit" value="Показа�
 	 $count++;
  }
 }
-function print_table(){
+
 	$sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error());
-  Print '<div id="warning">Абонентов обработано: '.$count.' |  Абонентов всего: '.$total.'</div>';
- Print "<table border cellpadding=3 style=width:100% algin=center>";
- Print "<th>№</th><th>Номер телефона:</th><th>ФИО:</th><th>Время:</th> <th>Статус:</th> "; 
+ fwrite($fp,'<div id="warning">Абонентов обработано: '.$count.' |  Абонентов всего: '.$total.'</div>');
+ fwrite($fp,"<table border cellpadding=3 style=width:100% algin=center>");
+ fwrite($fp,"<th>№</th><th>Номер телефона:</th><th>ФИО:</th><th>Время:</th> <th>Статус:</th> "); 
  $number = 1;
  while($info = mysql_fetch_array( $sql_data )) 
  { 
@@ -87,31 +89,38 @@ function print_table(){
 			$status = "Остановлено";
 			break;	 
 	 }
- Print "<tr>"; 
- Print "<td>".$number . "</td> "; 
- Print "<td>".$info['phone_number'] . "</td> "; 
- Print "<td>".$info['first_name'] . "</td> "; 
- Print "<td>".$info['last_local_call_time'] . "</td> "; 
- Print "<td>".$status. " </td></tr>"; 
+ fwrite($fp,"<tr>"); 
+ fwrite($fp,"<td>".$number . "</td> "); 
+ fwrite($fp,"<td>".$info['phone_number'] . "</td> "); 
+ fwrite($fp,"<td>".$info['first_name'] . "</td> "); 
+ fwrite($fp,"<td>".$info['last_local_call_time'] . "</td> "); 
+ fwrite($fp,"<td>".$status. " </td></tr>"); 
  $number++; 
  } 
- Print '</table>'; 
+ fwrite($fp,'</table>'); 
+ 
 }
+if($_POST['list_code'] != '' ){
 print_table();
+rewind($fp);
+echo stream_get_contents($fp);
+fclose($fp);
 print '<hr><input type="submit" name="send_mail" value="Показать">';
 }
 //Отправка отчета ПДС 
 if($_POST['list_code'] != '' && isset($_POST['send_mail'])){
+	
 	$subject = '=?utf-8?b?'.base64_encode("Протокол вызовов системы автоматического оповещения").'?=';
         $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
         'X-Mailer: PHP/' . phpversion();
  $to = 'samohin-iv@utg.gazprom.ru';
+ print_table();
+ rewind($fp);
 $body = '
 <html>
-    <head><meta http-equiv="content-type" content="text/html; charset=utf-8" /></head>
-<div id="warning">Абонентов обработано: '.$count.' |  Абонентов всего: '.$total.'</div>
-'.print_table().'
+    <head><meta http-equiv="content-type" content="text/html; charset=utf-8" /></head><body>
+'.stream_get_contents($fp).'</body>
 </html>        
 ';
 
@@ -122,6 +131,7 @@ if (mail($to, $subject, $body, $headers)) {
   echo("<p>Error...</p>");
  }
 }
+fclose($fp);
  mysql_close($mysql);
   ?>
 
