@@ -27,7 +27,7 @@
 	<div id="main">
 		<div class="center">
 
-<div align=center>	<h2>Статус вызовов в системе автоматического оповещения</h2></div>
+<div align=center>	<h2>Протокол вызовов системы автоматического оповещения</h2></div>
 
 <hr>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">	
@@ -62,7 +62,8 @@ print '</select></th><th><input type="submit" name="submit" value="Показа�
 	 $count++;
  }
 }
-$sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error());
+function print_table(){
+	$sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error());
   Print '<div id="warning">Абонентов обработано: '.$count.' |  Абонентов всего: '.$total.'</div>';
  Print "<table border cellpadding=3 style=width:100% algin=center>";
  Print "<th>№</th><th>Номер телефона:</th><th>ФИО:</th><th>Время:</th> <th>Статус:</th> "; 
@@ -94,10 +95,33 @@ $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,sta
  Print "<td>".$status. " </td></tr>"; 
  $number++; 
  } 
- Print "</table>"; 
+ Print '</table>'; 
 }
- 
+print_table();
+print '<hr><input type="submit" name="send_mail" value="Показать">';
+}
+//Отправка отчета ПДС 
+if($_POST['list_code'] != '' && isset($_POST['send_mail'])){
+	$subject = '=?utf-8?b?'.base64_encode("Протокол вызовов системы автоматического оповещения").'?=';
+        $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
+        'Content-Type: text/html; charset=UTF-8' .
+        'X-Mailer: PHP/' . phpversion();
+ $to = 'samohin-iv@utg.gazprom.ru';
+$body = '
+<html>
+    <head><meta http-equiv="content-type" content="text/html; charset=utf-8" /></head>
+<div id="warning">Абонентов обработано: '.$count.' |  Абонентов всего: '.$total.'</div>
+'.print_table().'
+</html>        
+';
 
+if (mail($to, $subject, $body, $headers)) {
+
+  echo("<p>Sent</p>");
+ } else {
+  echo("<p>Error...</p>");
+ }
+}
  mysql_close($mysql);
   ?>
 
