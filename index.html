@@ -113,7 +113,7 @@ if (isset ($_POST['stop'])) {
 //Запись в журнал
 if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_code']) && empty($_POST['stop'])){
 	date_default_timezone_set('Europe/Minsk');
-	mysql_query('insert into alarm_journal values("'.date("Y-m-d H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_code'].'","'.$_SERVER['REMOTE_USER'].'")') or die(mysql_error());
+	mysql_query('insert into alarm_journal values("'.date("Y-m-d H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_name'].'","'.$_SERVER['REMOTE_USER'].'")') or die(mysql_error());
 }
 }		
  //Статус системы
