@@ -27,7 +27,7 @@
 	<div id="main">
 		<div class="center">
 
-<div align=center>	<h2>Статус вызовов в системе автоматического оповещения</h2></div>
+<div align=center>	<h2>Протокол вызовов системы автоматического оповещения</h2></div>
 
 <hr>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">	
@@ -102,7 +102,7 @@ $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,sta
   ?>
 
 <div class="boxads">Прототип системы оповещения.
- Версия 0.5.3<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 0.8 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
 2015г. ,СЦС. <a href="mailto:@utg.gazprom.ru"></a></div>
 			</div>
@@ -121,10 +121,11 @@ $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,sta
 			<br>
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.101.132" target="_blank">Autodialme</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.167.14" target="_blank">Freepbx</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/sirena/alarm.php" target="_blank">Запуск системы</a> <br />
-
-
-
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Протокол оповещения</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/broadcast.php" target="_blank">Этажное оповещение</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/vicidial/admin_listloader_fourth_gen.php" target="_blank">Добавление списков</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/upload.php" target="_blank">Добавление файлов</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/journal.php" target="_blank">Журнал доступа</a> <br />
 			</div>
 			</div>
 		</div>
