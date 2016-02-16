@@ -52,13 +52,18 @@ if (isset ($_POST['stop'])) {
 		}
 //Выбор кода оповещения		
 	if(isset($_POST['alarm_code']) && $unchoose_count < '3' && empty($_POST['stop'])) {	     
-
-        mysql_query("update vicidial_campaigns set survey_first_audio_file = '".$_POST['alarm_code']."' where campaign_id = '92355983'") or die(mysql_error());
-     
+	  $file_name = preg_split("/[\.,]+/", $_POST['alarm_code']);
+        mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_".$file_name[0]."' where campaign_id = '92355983'") or die(mysql_error());
+      $sql_data = mysql_query("select * from alarm_codes where alarm_code = '".$_POST['alarm_code']."'") or die(mysql_error());
+      $data = mysql_fetch_array( $sql_data );
+      $header = $data['header'];
+      $message = $data['message'];
    }
+   
+
 //Рассылка почты
- 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['message'] != '' && empty($_POST['stop'])){
-	$subject = '=?utf-8?b?'.base64_encode($_POST['header']).'?=';
+ 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop'])){
+	$subject = '=?utf-8?b?'.base64_encode($header).'?=';
         $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
         'X-Mailer: PHP/' . phpversion();
@@ -66,27 +71,27 @@ if (isset ($_POST['stop'])) {
 		while($email = mysql_fetch_array( $mail )) 
 		{ 
 			if($email['email'] != '' && empty($_POST['stop'])) {
-			mail($email['email'], $subject, $_POST['message'], $headers);
+			mail($email['email'], $subject, $message, $headers);
 			} elseif (isset($_POST['stop'])){
 			break;
 			}
 		} 
-		} 
+		 
 	}else { 
 	$unchoose_count++;
 		}
 //Рассылка sms
- 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['message'] != '' && empty($_POST['stop'])){
+ 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop'])){
 	$sql_data = mysql_query("select phone_number from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
 	    
 		while (  $phone_number = mysql_fetch_array( $sql_data ) ) 
 		{ 
-                if($phone_number['phone_number'] != '' && empty($_POST['stop']) && preg_match('/^[0-9]{11}+$/', $phone_number['phone_number'])) {
+                if($phone_number['phone_number'] != '' && empty($_POST['stop']) && preg_match('/^[0-9]{12}+$/', $phone_number['phone_number'])) {
                 $phone  = preg_split("/[\9,]+/", $phone_number['phone_number'] , 2);
                 $locale='ru_RU.UTF-8';
                 setlocale(LC_ALL,$locale);
                 putenv('LC_ALL='.$locale);
-                exec('echo "'.$_POST['message'].'" | gammu --sendsms TEXT '.$phone[1].' -unicode -16bit -len 400'); 
+                exec('echo "'.$message.'" | gammu --sendsms TEXT '.$phone[1].' -unicode -16bit -len 400'); 
                 } elseif (isset($_POST['stop'])){
 				break;
 				}
@@ -104,15 +109,11 @@ if (isset ($_POST['stop'])) {
 			if(empty($_POST['list_code']) && empty($_POST['stop'])) { 
 		Print '<div id="warning">Выбери список абонентов</div>';
 			}	
-			if(empty($_POST['message']) && isset($_POST['mail']) && empty($_POST['stop'])) { 
-		Print '<div id="warning">Введи текст сообщения</div>';
-			} elseif (empty($_POST['message']) && isset($_POST['sms']) && empty($_POST['stop'])) { 
-		Print '<div id="warning">Введи текст сообщения</div>';
-			}		
+		
 //Запись в журнал
 if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_code']) && empty($_POST['stop'])){
 	date_default_timezone_set('Europe/Minsk');
-	mysql_query('insert into alarm_journal values("'.date("Y-m-d H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_code'].'","'.$_SERVER['REMOTE_USER'].'")') or die(mysql_error());
+	mysql_query('insert into alarm_journal values("'.date("Y-m-d H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_name'].'","'.$_SERVER['REMOTE_USER'].'")') or die(mysql_error());
 }
 }		
  //Статус системы
@@ -138,7 +139,7 @@ if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_co
  { 
   Print "<option value=".$list_data['list_id'].">".$list_data['list_name']."</option>";
 }
-mysql_close($mysql);
+
   ?>
 </select>
 </p>
@@ -149,14 +150,13 @@ mysql_close($mysql);
 	<option value="">Выбор...</option>
 <?php 
  //Список файлов
- 
-  foreach(scandir("/var/lib/asterisk/sounds") as $file) 
+ $sql_data = mysql_query("select * from alarm_codes") or die(mysql_error());
+   while($alarm = mysql_fetch_array( $sql_data ))
  { 
-	 if (preg_match("/go_/i", $file)) {
-	 $name=preg_split("/[\.,]+/", $file);
-         Print "<option value=".$name[0].">".$name[0]."</option>";
+	 
+         Print "<option value=".$alarm['alarm_code'].">".$alarm['header']."</option>";
  }
-}
+ mysql_close($mysql);
   ?>
 </select>
 </p>
@@ -179,15 +179,7 @@ mysql_close($mysql);
 </TR>
  </table>
  <hr>
- <h2>Настройки текстового оповещения</h2>
-<hr>
-	<h2>Введи тему сообщения:</h2>
-<input type="text" name="header" value="Проверка системы оповещения."  size="64">
-<h2>Введи текст сообщения:</h2>
-<textarea name="message" rows="5" cols="64">Проверка системы оповещения.</textarea>
 
-					
- <hr>
  <table border=0 cellpadding=4 algin=center > 
   <TR> 
 	  <TD BGCOLOR="#FF0000"><input type="submit" name="submit" value="СТАРТ"></TD>
@@ -202,7 +194,7 @@ mysql_close($mysql);
   
   
 <div class="boxads">Прототип системы оповещения.
- Версия 0.5.3<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 0.8 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2015г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>
 		<div class="leftmenu">
@@ -220,11 +212,11 @@ mysql_close($mysql);
 			<br>
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.101.132" target="_blank">Autodialme</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.167.14" target="_blank">Freepbx</a> <br />
-<img src="images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Статус вызовов</a> <br />
-<img src="images/arrow.gif" alt="" /> <a href="/sirena/broadcast.php" target="_blank">Этажное оповещение</a> <br />
-<img src="images/arrow.gif" alt="" /> <a href="/vicidial/admin_listloader_fourth_gen.php" target="_blank">Добавление списков</a> <br />
-<img src="images/arrow.gif" alt="" /> <a href="/audiostore" target="_blank">Добавление файлов</a> <br />
-<img src="images/arrow.gif" alt="" /> <a href="/sirena/journal.php" target="_blank">Журнал доступа</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Протокол оповещения</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/broadcast.php" target="_blank">Этажное оповещение</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/vicidial/admin_listloader_fourth_gen.php" target="_blank">Добавление списков</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/upload.php" target="_blank">Добавление файлов</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/journal.php" target="_blank">Журнал доступа</a> <br />
 			</div>
 			</div>
 		</div>
