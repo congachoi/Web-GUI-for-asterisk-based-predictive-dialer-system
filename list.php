@@ -30,7 +30,7 @@
 <div align=center>	<h2>Протокол вызовов системы автоматического оповещения</h2></div>
 
 <hr>
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">	
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">
 	<table border cellpadding=3 style=width:100% algin=center>
 <th><h2>Укажи список абонентов:</h2></th>
 <th><select name="list_code">
@@ -50,11 +50,14 @@ mysql_select_db("asterisk") or die(mysql_error());
 	 Print "<option value=".$list_data['list_id'].">".$list_data['list_name']."</option>";
  }
 }
-print '</select></th><th><input type="submit" name="submit" value="Показать"></th></table></form>';
- 
- function print_table(){
-	 $size_fp = 1 * 1024 * 1024;
+print '</select></th><th><input type="submit" name="submit" value="Показать"></th></table>';
+
+//Определение потока с данными
+$size_fp = 1 * 1024 * 1024;
 $fp = fopen("php://temp/maxmemory:$size_fp", 'r+');
+
+ //Обработка и запись данных в память
+ function print_table($fp){
  $sql_data = mysql_query("select phone_number,first_name,last_local_call_time,status from vicidial_list where list_id = '". $_POST['list_code']."' AND status != 'NEW'") or die(mysql_error());
  $count=0; 
  $total=0;
@@ -98,40 +101,43 @@ $fp = fopen("php://temp/maxmemory:$size_fp", 'r+');
  $number++; 
  } 
  fwrite($fp,'</table>'); 
- 
+ rewind($fp);
 }
 if($_POST['list_code'] != '' ){
-print_table();
-rewind($fp);
-echo stream_get_contents($fp);
-fclose($fp);
-print '<hr><input type="submit" name="send_mail" value="Показать">';
+	print_table($fp);
+	//Вывод содержимого потока
+	echo stream_get_contents($fp);
+	fclose($fp);
+	print '<hr><input type="submit" name="send_mail" value="Отправить отчет ПДС">';
 }
 //Отправка отчета ПДС 
 if($_POST['list_code'] != '' && isset($_POST['send_mail'])){
-	
-	$subject = '=?utf-8?b?'.base64_encode("Протокол вызовов системы автоматического оповещения").'?=';
+	//Определение потока с данными
+	$size_fp = 1 * 1024 * 1024;
+	$fp = fopen("php://temp/maxmemory:$size_fp", 'r+');
+	//Заголовки письма
+	$subject = '=?utf-8?b?'.base64_encode("Протокол вызовов системы автоматического оповещения от ".date("d-m-Y")).'?=';
         $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
         'X-Mailer: PHP/' . phpversion();
- $to = 'samohin-iv@utg.gazprom.ru';
- print_table();
- rewind($fp);
-$body = '
-<html>
+	$to = 'samohin-iv@utg.gazprom.ru';
+	print_table($fp);
+	$body = '
+	<html>
     <head><meta http-equiv="content-type" content="text/html; charset=utf-8" /></head><body>
-'.stream_get_contents($fp).'</body>
-</html>        
-';
-
+	'.stream_get_contents($fp).'</body>
+	</html>        
+	';
+//Отправка письма
 if (mail($to, $subject, $body, $headers)) {
 
-  echo("<p>Sent</p>");
- } else {
-  echo("<p>Error...</p>");
- }
+	echo("<h1>Сообщение отправлено</h1>");
+	} else {
+	echo("<h1>Ошибка отправления</h1>");
+	}
+	fclose($fp);
 }
-fclose($fp);
+ print "</form>";
  mysql_close($mysql);
   ?>
 
@@ -155,6 +161,7 @@ fclose($fp);
 			<br>
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.101.132" target="_blank">Autodialme</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.167.14" target="_blank">Freepbx</a> <br />
+			<img src="images/arrow.gif" alt="" /> <a href="/sirena/alarm.php" target="_blank">Запуск оповещения</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Протокол оповещения</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="/sirena/broadcast.php" target="_blank">Этажное оповещение</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="/vicidial/admin_listloader_fourth_gen.php" target="_blank">Добавление списков</a> <br />
