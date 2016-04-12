@@ -39,6 +39,8 @@
 //Остановка системы
 if (isset ($_POST['stop'])) {
 	mysql_query("update vicidial_list set status = 'SP' where status !='PM'") or die(mysql_error());
+	exec('killall -9 bash');
+	exec('killall -9 gammu');
 	print '<div id="warning">АВАРИЙНАЯ ОСТАНОВКА</div>';
 }
 
@@ -83,19 +85,22 @@ if (isset ($_POST['stop'])) {
 //Рассылка sms
  	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop'])){
 	$sql_data = mysql_query("select phone_number from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
-	    
+	    $locale='ru_RU.UTF-8';
+        setlocale(LC_ALL,$locale);
+        putenv('LC_ALL='.$locale);
+	    exec('echo "'.$message.'" > /tmp/message'); 
+	    exec('rm /tmp/phones');
 		while (  $phone_number = mysql_fetch_array( $sql_data ) ) 
 		{ 
                 if($phone_number['phone_number'] != '' && empty($_POST['stop']) && preg_match('/^[0-9]{12}+$/', $phone_number['phone_number'])) {
                 $phone  = preg_split("/[\9,]+/", $phone_number['phone_number'] , 2);
-                $locale='ru_RU.UTF-8';
-                setlocale(LC_ALL,$locale);
-                putenv('LC_ALL='.$locale);
-                exec('echo "'.$message.'" | gammu --sendsms TEXT '.$phone[1].' -unicode -16bit -len 400'); 
-                } elseif (isset($_POST['stop'])){
-				break;
-				}
-		} 
+              
+                exec('echo "'.$phone[1].'" >> /tmp/phones'); 
+                 
+                }
+				
+		}
+		exec('bash /usr/bin/sendsms.sh &'); 
 	}else { 
 	$unchoose_count++;
 		}		
@@ -126,7 +131,49 @@ if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_co
 	}
 	 
 		 ?>
+		 
 		 <hr>
+		 <h2>Состояние узлов системы</h2>
+	 <table border=0 cellpadding=4 algin=center > 
+
+<TR>
+<TD BGCOLOR="#7FFFF4"><h2>Телефонная линия:</h2></TD>
+
+<?php
+if(exec('asterisk -x "sip show registry" | grep Registered')){
+print "<TD BGCOLOR=#00FF07><h2>OK</h2></TD>";
+} else {
+print "<TD BGCOLOR=#FA0008><h2>Нет связи с АТС</h2></TD>";
+}
+?>
+
+</TR>
+<TR>
+<TD BGCOLOR="#7FFFF4"><h2>Модем 3G:</h2></TD>
+
+<?php
+if(exec('ls /dev/ttyUSB0')){
+print "<TD BGCOLOR=#00FF07><h2>OK</h2></TD>";	
+} else {
+print "<TD BGCOLOR=#FA0008><h2>Модем не подключен</h2></TD>";
+}
+?>
+
+</TR>
+<TR>
+<TD BGCOLOR="#7FFFF4"><h2>Почтовый сервер:</h2></TD>
+
+<?php
+if(exec('ping -c 1 10.16.160.4')){
+print "<TD BGCOLOR=#00FF07><h2>OK</h2></TD>";	
+} else {
+print "<TD BGCOLOR=#FA0008><h2>Нет связи с сервером</h2></TD>";
+}
+?>
+
+</TR>	
+</table> 
+<hr>	 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" onsubmit="return confirm('Вы уверены?');">		 
 <p>
 <h2>Укажи список абонентов:</h2>
@@ -174,7 +221,7 @@ if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_co
 <TD BGCOLOR="#00FF07"> <input type="checkbox" name="mail" value="ON" /></TD>
 </TR>
 <TR>
-<TD BGCOLOR="#7FFFF4"><h2>Рассылка смс:</h2></TD>
+<TD BGCOLOR="#7FFFF4"><h2>Рассылка СМС:</h2></TD>
 <TD BGCOLOR="#00FF07"> <input type="checkbox" name="sms" value="ON" /></TD>
 </TR>
  </table>
