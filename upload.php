@@ -73,7 +73,7 @@ if ($uploadOk == 0 && empty($_POST['delete_code'])) {
 	 
 	 foreach ($_POST['delete_code'] as $db_code){
 	  mysql_query("DELETE FROM alarm_codes WHERE alarm_code = '".$db_code."'");
-	  $file_path = $target_dir . $db_code;
+	  $file_path = $target_dir ."go_". $db_code;
 	  
 	  if (file_exists($file_path)) {
          unlink($file_path);
