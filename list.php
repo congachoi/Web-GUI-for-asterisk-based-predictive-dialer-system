@@ -29,7 +29,9 @@
 <div align=center>	<h2>Протокол вызовов системы автоматического оповещения</h2></div>
 
 <hr>
+
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" >
+
 	<table border cellpadding=3 style=width:100% algin=center>
 <th><h2>Укажи список абонентов:</h2></th>
 <th><select name="list_code">
