@@ -95,6 +95,12 @@ $fp = fopen("php://temp/maxmemory:$size_fp", 'r+');
          case "":
             $status = "Не обработан";
             break;
+         case "AA":
+            $status = "Автоответчик";
+            break;
+         default:
+			$status = "Неизвестно";
+			break;
 	 }
  fwrite($fp,"<tr>"); 
  fwrite($fp,"<td>".$number . "</td> "); 

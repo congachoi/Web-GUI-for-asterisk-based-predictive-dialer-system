@@ -62,8 +62,15 @@ if (isset ($_POST['stop'])) {
 	} else {
 		Print '<h2>Статус внутреннего оповещения: Отключено</h2>';
 	}
+	
+if(isset($_POST['alarm_code']) && empty($_POST['stop'])){
+	date_default_timezone_set('Europe/Minsk');
+	mysql_query('insert into alarm_journal values("'.date("Y-m-d 
+	H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_name'].'","'.$_SERVER['REMOTE_USER'].'")') or 
+	die(mysql_error());
+}
 	 
-	mysql_close($mysql);	 ?>
+		 ?>
 		 
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
 <hr>
@@ -74,13 +81,13 @@ if (isset ($_POST['stop'])) {
 <?php 
  //Список файлов
  
-  foreach(scandir("/var/lib/asterisk/sounds") as $file) 
+$sql_data = mysql_query("select * from alarm_codes") or die(mysql_error());
+   while($alarm = mysql_fetch_array( $sql_data ))
  { 
-	 if (preg_match("/go_/i", $file)) {
-	 $name=preg_split("/[\.,]+/", $file);
-         Print "<option value=".$name[0].">".$name[0]."</option>";
+	 
+         Print "<option value=".$alarm['alarm_code'].">".$alarm['header']."</option>";
  }
-}
+ mysql_close($mysql);
   ?>
 </select>
 </p>

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -100,7 +99,7 @@ if (isset ($_POST['stop'])) {
                 }
 				
 		}
-		exec('bash /usr/bin/sendsms.sh &'); 
+		exec('bash /usr/bin/sendsms.sh >/dev/null 2>/dev/null &'); 
 	}else { 
 	$unchoose_count++;
 		}		
@@ -118,7 +117,9 @@ if (isset ($_POST['stop'])) {
 //Запись в журнал
 if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_code']) && empty($_POST['stop'])){
 	date_default_timezone_set('Europe/Minsk');
-	mysql_query('insert into alarm_journal values("'.date("Y-m-d H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_name'].'","'.$_SERVER['REMOTE_USER'].'")') or die(mysql_error());
+	mysql_query('insert into alarm_journal values("'.date("Y-m-d 
+H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_name'].'","'.$_SERVER['REMOTE_USER'].'")') or 
+die(mysql_error());
 }
 }		
  //Статус системы
@@ -131,7 +132,7 @@ if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_co
 	}
 	 
 		 ?>
-		 
+
 		 <hr>
 		 <h2>Состояние узлов системы</h2>
 	 <table border=0 cellpadding=4 algin=center > 
@@ -140,7 +141,7 @@ if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_co
 <TD BGCOLOR="#7FFFF4"><h2>Телефонная линия:</h2></TD>
 
 <?php
-if(exec('asterisk -x "sip show registry" | grep Registered')){
+if(exec('sudo /usr/sbin/asterisk -x "sip show registry" | grep Registered')){
 print "<TD BGCOLOR=#00FF07><h2>OK</h2></TD>";
 } else {
 print "<TD BGCOLOR=#FA0008><h2>Нет связи с АТС</h2></TD>";
@@ -149,7 +150,7 @@ print "<TD BGCOLOR=#FA0008><h2>Нет связи с АТС</h2></TD>";
 
 </TR>
 <TR>
-<TD BGCOLOR="#7FFFF4"><h2>Модем 3G:</h2></TD>
+<TD BGCOLOR="#7FFFF4"><h2>Модем СМС:</h2></TD>
 
 <?php
 if(exec('ls /dev/ttyUSB0')){
@@ -167,13 +168,13 @@ print "<TD BGCOLOR=#FA0008><h2>Модем не подключен</h2></TD>";
 if(exec('ping -c 1 10.16.160.4')){
 print "<TD BGCOLOR=#00FF07><h2>OK</h2></TD>";	
 } else {
-print "<TD BGCOLOR=#FA0008><h2>Нет связи с сервером</h2></TD>";
+print "<TD BGCOLOR=#FA0008>Нет связи с сервером</TD>";
 }
 ?>
 
-</TR>	
-</table> 
-<hr>	 
+</TR>	 
+</table>		 
+<hr>
 <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" onsubmit="return confirm('Вы уверены?');">		 
 <p>
 <h2>Укажи список абонентов:</h2>
