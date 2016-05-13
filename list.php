@@ -152,9 +152,9 @@ if (mail($to, $subject, $body, $headers)) {
   ?>
 
 <div class="boxads">Прототип системы оповещения.
- Версия 0.8 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 0.9 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
-2015г. ,СЦС. <a href="mailto:@utg.gazprom.ru"></a></div>
+2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru"></a></div>
 			</div>
 		<div class="leftmenu">
 		
@@ -182,7 +182,7 @@ if (mail($to, $subject, $body, $headers)) {
 		</div>
 	</div>
 	<br />&nbsp;<br />
-	<div id="footer">Copyright &copy; 2015 US | Design: СЦС 
+	<div id="footer">Copyright &copy; 2016 US | Design: СЦС 
 		 
 </div>
 	

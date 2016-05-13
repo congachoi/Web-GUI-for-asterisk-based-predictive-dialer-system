@@ -37,14 +37,10 @@ mysql_select_db("asterisk") or die(mysql_error());
  if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
  // Инициализация переменных
  $target_dir = "/var/www/html/sounds/";
- $target_file = $target_dir ."go_". basename($_FILES["fileToUpload"]["name"]);
+ $target_name = preg_split("/\./", basename($_FILES["fileToUpload"]["name"]), -1, PREG_SPLIT_NO_EMPTY);
+ $target_file = $target_dir ."go_".$target_name[0].".wav";
  $uploadOk = 1;
- $FileType = pathinfo($target_file,PATHINFO_EXTENSION);
-// Проверка расширения
-	if($FileType != "wav" && empty($_POST['delete_code']) && $_FILES["fileToUpload"]["type"] != "audio/x-wav") {
-    echo '<div id="warning">Загрузи файл в формате WAV!</div>';
-    $uploadOk = 0;
-}
+
 // Проверка дубликата 
 if (file_exists($target_file) && empty($_POST['delete_code'])) {
     echo '<div id="warning">Такой файл уже существует!</div>';
@@ -59,12 +55,15 @@ if ($_FILES["fileToUpload"]["size"] > 2000000 && empty($_POST['delete_code'])) {
 if ($uploadOk == 0 && empty($_POST['delete_code'])) {
     echo '<div id="warning">Ошибка. Файл не добавлен!</div>';
 } elseif (empty($_POST['delete_code'])) {
-    if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
-        echo "<h2>Файл ". basename( $_FILES["fileToUpload"]["name"]). " был добавлен.</h2>";
+	//Конвертация файла в совместимый формат
+
+	exec("ffmpeg -i ".$_FILES["fileToUpload"]["tmp_name"]." -ac 1 -ar 8000 ".$target_file);
+    if (file_exists($target_file)) {
+        echo "<h2>Файл ".$target_name[0]. " был добавлен.</h2>";
         // Коммит в базу
-        mysql_query('insert into alarm_codes values("'.$_FILES["fileToUpload"]["name"].'","'.$_POST['header'].'","'.$_POST['message'].'")') or die(mysql_error());  
+        mysql_query('insert into alarm_codes values("'.$target_name[0].'","'.$_POST['header'].'","'.$_POST['message'].'")') or die(mysql_error());  
     } else {
-        echo '<div id="warning">Ошибка. Файл не добавлен!</div>';
+        echo '<div id="warning">Ошибка при конвертации файла!</div>';
     }
 
  }
@@ -72,16 +71,16 @@ if ($uploadOk == 0 && empty($_POST['delete_code'])) {
  if(isset($_POST['delete_code'])) {
 	 
 	 foreach ($_POST['delete_code'] as $db_code){
-	  mysql_query("DELETE FROM alarm_codes WHERE alarm_code = '".$db_code."'");
-	  $file_path = $target_dir ."go_". $db_code;
-	  
+	  $file_path = $target_dir."go_".$db_code.".wav";
+
 	  if (file_exists($file_path)) {
          unlink($file_path);
+         mysql_query("DELETE FROM alarm_codes WHERE alarm_code = '".$db_code."'");
       }
    }
  }
 }
-
+//Таблица с файлами на сервере
  $sql_data = mysql_query("select * from alarm_codes") or die(mysql_error());
  
   $number = 1;
@@ -108,12 +107,16 @@ mysql_close($mysql);
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
     <h2>Выбери файл для загрузки:</h2>
     <input type="file" name="fileToUpload" id="fileToUpload">    
-<h3>Параметры файла: 8кгц моно wav</h3><hr><br>
+<h3>Примеры названия файла: 
+<br>Проверка системы оповещения.mp3
+<br>ЧС-ГО-01-01-16.wav
+<br>Точка "." в названии файла - зарезервированный символ</h3>
+<hr><br>
   <h2>Настройки текстового оповещения</h2>
 <hr>
-	<h2>Введи тему сообщения:</h2>
-<input type="text" name="header" value="" maxlength="30" size="64">
-<h2>Введи текст сообщения:</h2>
+	<h2>Тема сообщения:</h2>
+<input type="text" name="header" value="" maxlength="60" size="64">
+<h2>Текст сообщения:</h2>
 <textarea name="message" rows="5" maxlength="400" cols="64"></textarea>
 <h3>Максимальное количество символов: 400</h3>
  <table border=0 cellpadding=4 algin=center > 
@@ -126,9 +129,9 @@ mysql_close($mysql);
   <hr>
 
 <div class="boxads">Прототип системы оповещения.
- Версия 0.8 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 0.9 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
-2015г. ,СЦС. <a href="mailto:@utg.gazprom.ru"></a></div>
+2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru"></a></div>
 			</div>
 		<div class="leftmenu">
 		
@@ -155,7 +158,7 @@ mysql_close($mysql);
 		</div>
 	</div>
 	<br />&nbsp;<br />
-	<div id="footer">Copyright &copy; 2015 US | Design: СЦС 
+	<div id="footer">Copyright &copy; 2016 US | Design: СЦС 
 		 
 </div>
 	

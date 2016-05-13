@@ -31,10 +31,21 @@
  //Mysql
  $mysql = mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
  mysql_select_db("asterisk") or die(mysql_error());
- 
+  //Статус системы
+	$sql_data2 = mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error());
+	$status = mysql_fetch_array( $sql_data2 );	
+	if(empty($status)) {
+	Print '<h2>Статус оповещения: Отключено</h2>';
+	} else {
+		Print '<h2>Статус оповещения: Работа</h2>';
+		$inwork = "true";
+	}
  //Обработка формы
  if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
-
+	 
+if(isset($_POST['alarm_code']) && $_POST['list_code'] && isset($inwork)) {
+	Print '<div id="warning">СИСТЕМА В РАБОТЕ!!! <br> ДЛЯ ПОВТОРНОГО ЗАПУСКА ПРОИЗВЕДИ ОСТАНОВКУ!!!</div>';
+}
 //Остановка системы
 if (isset ($_POST['stop'])) {
 	mysql_query("update vicidial_list set status = 'SP' where status !='PM'") or die(mysql_error());
@@ -44,7 +55,7 @@ if (isset ($_POST['stop'])) {
 }
 
 //Обзвон абонентов	 
-	if($_POST['dial'] == 'ON'  && empty($_POST['stop']) && $_POST['alarm_code'] != '' ) {
+	if($_POST['dial'] == 'ON'  && empty($_POST['stop']) && $_POST['alarm_code'] != '' && empty($status)) {
 	   
 	mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N' where list_id ='". $_POST['list_code']."'") or die(mysql_error());
 	
@@ -52,9 +63,9 @@ if (isset ($_POST['stop'])) {
 	$unchoose_count++;
 		}
 //Выбор кода оповещения		
-	if(isset($_POST['alarm_code']) && $unchoose_count < '3' && empty($_POST['stop'])) {	     
-	  $file_name = preg_split("/[\.,]+/", $_POST['alarm_code']);
-        mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_".$file_name[0]."' where campaign_id = '92355983'") or die(mysql_error());
+	if(isset($_POST['alarm_code']) && $unchoose_count < '3' && empty($_POST['stop']) && empty($status)) {	     
+	  $file_name = preg_split("/\./", $_POST['alarm_code']);
+        mysql_query("update vicidial_campaigns set survey_first_audio_file = '".$file_name[0]."' where campaign_id = '92355983'") or die(mysql_error());
       $sql_data = mysql_query("select * from alarm_codes where alarm_code = '".$_POST['alarm_code']."'") or die(mysql_error());
       $data = mysql_fetch_array( $sql_data );
       $header = $data['header'];
@@ -63,7 +74,7 @@ if (isset ($_POST['stop'])) {
    
 
 //Рассылка почты
- 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop'])){
+ 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($status)){
 	$subject = '=?utf-8?b?'.base64_encode($header).'?=';
         $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
@@ -82,7 +93,7 @@ if (isset ($_POST['stop'])) {
 	$unchoose_count++;
 		}
 //Рассылка sms
- 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop'])){
+ 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($status)){
 	$sql_data = mysql_query("select phone_number from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
 	    $locale='ru_RU.UTF-8';
         setlocale(LC_ALL,$locale);
@@ -104,7 +115,7 @@ if (isset ($_POST['stop'])) {
 	$unchoose_count++;
 		}		
 //Вывод ошибок
- if($unchoose_count == '3' && empty($_POST['stop'])){
+ if($unchoose_count == '3' && empty($_POST['stop']) && empty($status)){
   Print '<div id="warning">Выбери способ оповещения</div>';
   }
 	if(empty($_POST['alarm_code']) && isset($_POST['dial']) && empty($_POST['stop'])) { 
@@ -116,21 +127,21 @@ if (isset ($_POST['stop'])) {
 		
 //Запись в журнал
 if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_code']) && empty($_POST['stop'])){
-	date_default_timezone_set('Europe/Minsk');
+	
 	mysql_query('insert into alarm_journal values("'.date("Y-m-d 
-H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_name'].'","'.$_SERVER['REMOTE_USER'].'")') or 
+H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_code'].'","'.$_SERVER['REMOTE_USER'].'")') or 
 die(mysql_error());
 }
 }		
- //Статус системы
-	$sql_data2 = mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error());
-	$status = mysql_fetch_array( $sql_data2 );
-	if(empty($status)) {
-	Print '<h2>Статус оповещения: Отключено</h2>';
-	} else {
-		Print '<h2>Статус оповещения: Работа</h2>';
-	}
-	 
+
+//Выход из системы	
+if(isset($_POST['logout'])) {
+    header('WWW-Authenticate: Basic realm="Authentication Required"');
+    header('HTTP/1.0 401 Unauthorized');
+    echo "You must enter a valid login ID and password to access this resource\n";
+ 
+    exit;
+}
 		 ?>
 
 		 <hr>
@@ -165,11 +176,11 @@ print "<TD BGCOLOR=#FA0008><h2>Модем не подключен</h2></TD>";
 <TD BGCOLOR="#7FFFF4"><h2>Почтовый сервер:</h2></TD>
 
 <?php
-if(exec('ping -c 1 10.16.160.4')){
-print "<TD BGCOLOR=#00FF07><h2>OK</h2></TD>";	
-} else {
-print "<TD BGCOLOR=#FA0008>Нет связи с сервером</TD>";
-}
+//if(exec('ping -c 1 10.16.160.4')){
+//print "<TD BGCOLOR=#00FF07><h2>OK</h2></TD>";	
+//} else {
+//print "<TD BGCOLOR=#FA0008><h2>Нет связи с сервером<h2></TD>";
+//}
 ?>
 
 </TR>	 
@@ -233,6 +244,9 @@ print "<TD BGCOLOR=#FA0008>Нет связи с сервером</TD>";
 	  <TD BGCOLOR="#FF0000"><input type="submit" name="submit" value="СТАРТ"></TD>
 	  <TD BGCOLOR="#FF0000"><input type="submit" name="stop" value="СТОП"></TD>
 	  <TD BGCOLOR="#FF0000"><input type="reset" value="СБРОС"></TD>
+
+	  <TD BGCOLOR="#FFFFFF"><input type="submit" name="logout" value="Выход"></TD>
+
   </TR>
   </table>
 </form>
@@ -242,8 +256,8 @@ print "<TD BGCOLOR=#FA0008>Нет связи с сервером</TD>";
   
   
 <div class="boxads">Прототип системы оповещения.
- Версия 0.8 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
-<br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2015г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
+ Версия 0.9 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+<br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>
 		<div class="leftmenu">
 		
@@ -270,7 +284,7 @@ print "<TD BGCOLOR=#FA0008>Нет связи с сервером</TD>";
 		</div>
 	</div>
 	<br />&nbsp;<br />
-	<div id="footer">Copyright &copy; 2015 US | Design: СЦС 
+	<div id="footer">Copyright &copy; 2016 US | Design: СЦС 
 		 
 </div>
 	

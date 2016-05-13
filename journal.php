@@ -62,9 +62,9 @@ mysql_close($mysql);
  ?> <hr>
 
 <div class="boxads">Прототип системы оповещения.
- Версия 0.8 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 0.9 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
-2015г. ,СЦС. <a href="mailto:@utg.gazprom.ru"></a></div>
+2015г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru"></a></div>
 			</div>
 		<div class="leftmenu">
 		
