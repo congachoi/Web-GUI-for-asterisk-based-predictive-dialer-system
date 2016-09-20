@@ -9,6 +9,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="RU" />
 	<meta http-equiv="imagetoolbar" content="no" />
+	<link type="image/x-icon" href="/sirena/images/favicon.ico" rel="icon"/>
 	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta name="description" content="LGBlue Free Css Template" />
 	<meta name="keywords" content="free,css,template,business" />
@@ -121,14 +122,14 @@ if (isset($_FILES["leadfile"]) && $_FILES["leadfile"]["type"] != "application/vn
 }
 		 ?>
 <h2>Списки абонентов</h2>		 
-<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
+<form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" onsubmit="return confirm('Вы уверены?');">		 
 <hr>
 <table border cellpadding=3 style=width:100% algin=center>
 	<th>№</th><th>Название</th><th>ID</th><th>Количество абонентов</th><th>Удалить</th>
 <?php
 //Вывод перечня списков
 $number = 1 ;
-$list = mysql_query("select list_id,list_name from vicidial_lists") or die(mysql_error());
+$list = mysql_query("select list_id,list_name from vicidial_lists where list_id != '1001'") or die(mysql_error());
   while($list_data = mysql_fetch_array( $list )){
 	$data = mysql_query("select COUNT(*) from vicidial_list where list_id = '".$list_data['list_id']."'") or die(mysql_error());
 	$count = mysql_fetch_array( $data );
@@ -175,10 +176,10 @@ $list = mysql_query("select list_id,list_name from vicidial_lists") or die(mysql
 
   <input type="submit" value="Добавить" name="Upload">
  </form> 
-
+<hr>
 
 <div class="boxads">Прототип системы оповещения.
- Версия 1.0 beta<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 1.1 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>
 		<div class="leftmenu">

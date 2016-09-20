@@ -9,6 +9,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="RU" />
 	<meta http-equiv="imagetoolbar" content="no" />
+	<link type="image/x-icon" href="/sirena/images/favicon.ico" rel="icon"/>
 	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta name="description" content="LGBlue Free Css Template" />
 	<meta name="keywords" content="free,css,template,business" />
@@ -37,7 +38,7 @@ mysql_select_db("asterisk") or die(mysql_error());
  if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
  // Инициализация переменных
  $target_dir = "/var/www/html/sounds/";
- $target_name = preg_split("/\./", basename($_FILES["fileToUpload"]["name"]), -1, PREG_SPLIT_NO_EMPTY);
+ $target_name = preg_split("/\./", $_FILES["fileToUpload"]["name"], -1, PREG_SPLIT_NO_EMPTY);
  $target_file = $target_dir ."go_".$target_name[0].".wav";
  $uploadOk = 1;
 
@@ -49,6 +50,12 @@ if (file_exists($target_file) && empty($_POST['delete_code'])) {
 // Проверка размера файла
 if ($_FILES["fileToUpload"]["size"] > 2000000 && empty($_POST['delete_code'])) {
     echo '<div id="warning">Файл слишком большой!</div>';
+    $uploadOk = 0;
+}
+// Проверка имени файла
+$cor_name = preg_replace("/[^A-Z0-9._-]/i", "", $_FILES["fileToUpload"]["name"]);
+if ($cor_name[0] == "." && empty($_POST['delete_code'])) {
+    echo '<div id="warning">Ошибка наименования файла!</div>';
     $uploadOk = 0;
 }
 // Загрузка файла
@@ -94,7 +101,7 @@ Print "<th>№</th><th>Файл</th><th>Тема сообщения</th><th>Те
 	 
 	  Print "<tr>";
 	   Print "<td>".$number."</td> ";
-	   Print "<td>".$alarm['alarm_code'] . " </td> ";
+	   Print "<td><a href=/sounds/go_".$alarm['alarm_code'].".wav>".$alarm['alarm_code']."</a> </td> ";
 	    Print "<td>".$alarm['header']."</td> ";
 	    Print "<td>".$alarm['message']."</td> ";
 	     Print '<td><input type="checkbox" name="delete_code['.$number.']" value="'.$alarm['alarm_code'].'" /></td></tr>'; 
@@ -107,10 +114,12 @@ mysql_close($mysql);
 <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
     <h2>Выбери файл для загрузки:</h2>
     <input type="file" name="fileToUpload" id="fileToUpload">    
-<h3>Примеры названия файла: 
-<br>Проверка системы оповещения.mp3
-<br>ЧС-ГО-01-01-16.wav
-<br>Точка "." в названии файла - зарезервированный символ</h3>
+<h3>Буквы кирилического алфавита использовать ЗАПРЕЩЕНО.
+<br>Примеры названия файла: 
+<br>GO_test.mp3
+<br>CH-GO-01-01-16.wav
+<br>Точка "." в названии файла - зарезервированный символ
+</h3>
 <hr><br>
   <h2>Настройки текстового оповещения</h2>
 <hr>
@@ -129,9 +138,9 @@ mysql_close($mysql);
   <hr>
 
 <div class="boxads">Прототип системы оповещения.
- Версия 1.0 beta <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 1.1 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
-2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru"></a></div>
+2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>
 		<div class="leftmenu">
 		
@@ -147,7 +156,7 @@ mysql_close($mysql);
 			<img src="images/arrow.gif" alt="" /> <a href="http://www.utg.gazprom.ru/newUTG/default.aspx" target="_blank">Официальный сайт ООО "Газпром трансгаз Саратов"</a> <br />
 			<br>
 			
-			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.167.14" target="_blank">Freepbx</a> <br />
+			
 			<img src="images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Протокол оповещения</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="/sirena/alarm.php" target="_blank">Запуск оповещения</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="/sirena/broadcast.php" target="_blank">Этажное оповещение</a> <br />

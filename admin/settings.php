@@ -5,14 +5,15 @@
 
 <html>
 <head>
-	<title>Система автоматического внутреннего оповещения "Сирена"</title>
+	<title>Система автоматического оповещения "Сирена"</title>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="RU" />
 	<meta http-equiv="imagetoolbar" content="no" />
+	<link type="image/x-icon" href="/sirena/images/favicon.ico" rel="icon"/>
 	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta name="description" content="LGBlue Free Css Template" />
 	<meta name="keywords" content="free,css,template,business" />
-	<style type="text/css" media="all">@import "images/style.css";</style>
+	<style type="text/css" media="all">@import "../images/style.css";</style>
 	
 </head>
 
@@ -90,7 +91,7 @@ fclose($file);
  <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
 <hr>
 	Имя:<input type="text" name="username" value="" maxlength="30" >
-	Пароль:<input type="text" name="password" value="" maxlength="30" >
+	Пароль:<input type="password" name="password" value="" maxlength="30" >
   <input type="submit" name="add_user" value="Добавить">
  </form> 
   
@@ -129,7 +130,7 @@ fclose($file);
    ?>
     <input type="submit" name="submit" value="ОК">
  </form>
- 
+ <hr>
   <h2>Номер телефона внутреннего оповещения</h2>
  <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>">		 
 <hr><?php
@@ -140,33 +141,33 @@ fclose($file);
 	?>
   <input type="submit" name="broadcast" value="Изменить">
  </form> 
-  
+ <hr> 
 <div class="boxads">Прототип системы оповещения.
- Версия 1.0 beta<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 1.1 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>
 		<div class="leftmenu">
 		
 			<div class="padding">
 	
-<img src="images/top_logo.jpg" alt="Газпром трансгаз Саратов"/>
+<img src="../images/top_logo.jpg" alt="Газпром трансгаз Саратов"/>
 			<br />
 			<hr />
 
 			<h2>Ссылки</h2>
 			<div class="links">
-			<img src="images/arrow.gif" alt="" /> <a href="http://ts.utg.gazprom.ru/telsprav.aspx" target="_blank">Телефонный справочник ООО "Газпром трансгаз Саратов"</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="http://www.utg.gazprom.ru/newUTG/default.aspx" target="_blank">Официальный сайт ООО "Газпром трансгаз Саратов"</a> <br />
+			<img src="../images/arrow.gif" alt="" /> <a href="http://ts.utg.gazprom.ru/telsprav.aspx" target="_blank">Телефонный справочник ООО "Газпром трансгаз Саратов"</a> <br />
+			<img src="../images/arrow.gif" alt="" /> <a href="http://www.utg.gazprom.ru/newUTG/default.aspx" target="_blank">Официальный сайт ООО "Газпром трансгаз Саратов"</a> <br />
 			<br>
 			
-			<img src="images/arrow.gif" alt="" /> <a href="http://10.16.167.14" target="_blank">Freepbx</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Протокол оповещения</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/sirena/alarm.php" target="_blank">Запуск оповещения</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/sirena/broadcast.php" target="_blank">Этажное оповещение</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/sirena/subscribers.php" target="_blank">Добавление абонентов</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/sirena/upload.php" target="_blank">Добавление файлов</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/sirena/settings.php" target="_blank">Настройки системы</a> <br />
-			<img src="images/arrow.gif" alt="" /> <a href="/sirena/journal.php" target="_blank">Журнал доступа</a> <br />
+			
+			<img src="../images/arrow.gif" alt="" /> <a href="/sirena/list.php" target="_blank">Протокол оповещения</a> <br />
+			<img src="../images/arrow.gif" alt="" /> <a href="/sirena/alarm.php" target="_blank">Запуск оповещения</a> <br />
+			<img src="../images/arrow.gif" alt="" /> <a href="/sirena/broadcast.php" target="_blank">Этажное оповещение</a> <br />
+			<img src="../images/arrow.gif" alt="" /> <a href="/sirena/subscribers.php" target="_blank">Добавление абонентов</a> <br />
+			<img src="../images/arrow.gif" alt="" /> <a href="/sirena/upload.php" target="_blank">Добавление файлов</a> <br />
+			<img src="../images/arrow.gif" alt="" /> <a href="/sirena/settings.php" target="_blank">Настройки системы</a> <br />
+			<img src="../images/arrow.gif" alt="" /> <a href="/sirena/journal.php" target="_blank">Журнал доступа</a> <br />
 			</div>
 			</div>
 		</div>

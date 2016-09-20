@@ -9,6 +9,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="RU" />
 	<meta http-equiv="imagetoolbar" content="no" />
+	<link type="image/x-icon" href="/sirena/images/favicon.ico" rel="icon"/>
 	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta name="description" content="LGBlue Free Css Template" />
 	<meta name="keywords" content="free,css,template,business" />
@@ -44,12 +45,12 @@ if (isset ($_POST['stop'])) {
 
 //Обзвон абонентов	 
 	if(isset($_POST['start']) && empty($_POST['stop']) ) {
-	mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N' where list_id ='1001'") or die(mysql_error());
+	mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N',gmt_offset_now = '-5.00' where list_id ='1001'") or die(mysql_error());
 	}
 //Выбор кода оповещения		
 	if(isset($_POST['alarm_code']) && empty($_POST['stop'])) {	     
-		$file_name = preg_split("/\./", $_POST['alarm_code']);
-        mysql_query("update vicidial_campaigns set survey_first_audio_file = '".$file_name[0]."' where campaign_id = '76873962'") or die(mysql_error());
+		
+        mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_".$_POST['alarm_code']."' where campaign_id = '76873962'") or die(mysql_error());
      
    }
 
@@ -66,7 +67,7 @@ if (isset ($_POST['stop'])) {
 if(isset($_POST['alarm_code']) && empty($_POST['stop'])){
 	
 	mysql_query('insert into alarm_journal values("'.date("Y-m-d 
-	H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","BROADCAST","BROADCAST","BROADCAST","'.$_POST['alarm_code'].'","1001","'.$_SERVER['REMOTE_USER'].'")') or 
+	H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","","","","'.$_POST['alarm_code'].'","BROADCAST","'.$_SERVER['REMOTE_USER'].'")') or 
 	die(mysql_error());
 }
 	 
@@ -107,7 +108,7 @@ $sql_data = mysql_query("select * from alarm_codes") or die(mysql_error());
   
   
 <div class="boxads">Прототип системы внутреннего оповещения.
- Версия 1.0 beta<br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+ Версия 1.1 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>
 		<div class="leftmenu">
