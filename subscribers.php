@@ -176,6 +176,7 @@ $list = mysql_query("select list_id,list_name from vicidial_lists where list_id 
 
   <input type="submit" value="Добавить" name="Upload">
  </form> 
+ <a href=Example.xls>Образец таблицы для заполнения</a>
 <hr>
 
 <div class="boxads">Cистема оповещения.
