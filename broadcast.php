@@ -67,7 +67,7 @@ if (isset ($_POST['stop'])) {
 if(isset($_POST['alarm_code']) && empty($_POST['stop'])){
 	
 	mysql_query('insert into alarm_journal values("'.date("Y-m-d 
-	H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","","","","'.$_POST['alarm_code'].'","BROADCAST","'.$_SERVER['REMOTE_USER'].'")') or 
+	H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","","","","'.$_POST['alarm_code'].'","HALL","'.$_SERVER['REMOTE_USER'].'")') or 
 	die(mysql_error());
 }
 	 

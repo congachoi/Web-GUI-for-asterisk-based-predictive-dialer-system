@@ -9,6 +9,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 	<meta http-equiv="Content-Language" content="RU" />
 	<meta http-equiv="imagetoolbar" content="no" />
+	<link type="image/x-icon" href="/sirena/images/favicon.ico" rel="icon"/>
 	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta name="description" content="LGBlue Free Css Template" />
 	<meta name="keywords" content="free,css,template,business" />
@@ -61,8 +62,8 @@ $sql_data = mysql_query("select * from alarm_journal") or die(mysql_error());
 mysql_close($mysql);
  ?> <hr>
 
-<div class="boxads">Прототип системы оповещения.
- Версия 1.0 beta <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
+<div class="boxads">Система оповещения.
+ Версия 1.1 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
 2015г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru"></a></div>
 			</div>
