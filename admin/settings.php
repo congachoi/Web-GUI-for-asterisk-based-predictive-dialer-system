@@ -142,7 +142,7 @@ fclose($file);
   <input type="submit" name="broadcast" value="Изменить">
  </form> 
  <hr> 
-<div class="boxads">Прототип системы оповещения.
+<div class="boxads">Система оповещения.
  Версия 1.1 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>

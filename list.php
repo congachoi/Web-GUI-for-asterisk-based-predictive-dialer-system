@@ -155,7 +155,7 @@ if (mail($to, $subject, $body, $headers)) {
  mysql_close($mysql);
   ?>
 
-<div class="boxads">Прототип системы оповещения.
+<div class="boxads">Cистема оповещения.
  Версия 1.1 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 
 2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
