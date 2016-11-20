@@ -31,9 +31,13 @@
  <?php
  //Выход из системы	
 if(isset($_POST['logout'])) {
-    header('WWW-Authenticate: Basic realm="Authentication Required"');
-    header('HTTP/1.0 401 Unauthorized');
-    echo "<h2>Необходимо указать пользовательские данные</h2>";
+
+    session_start();
+	if(session_destroy())
+	{
+		header("Location: sirena/alarm.php");
+	}
+
  
     exit;
 }
@@ -44,7 +48,8 @@ if(isset($_POST['logout'])) {
 	$sql_data2 = mysql_query("select status from vicidial_list where status = 'NEW'") 	or die(mysql_error());
 	$status = mysql_fetch_array( $sql_data2 );	
 	$gammu = exec("ps -A | grep  gammu");
-	if(empty($status) && empty($gammu)) {
+	$redial = exec("ls /tmp/redial_inwork");
+	if(empty($status) && empty($gammu) && empty($redial)) {
 	Print '<h2>Статус оповещения: Отключено</h2>';
 	} else {
 		Print '<h2>Статус оповещения: Работа</h2>';
@@ -62,6 +67,7 @@ if (isset ($_POST['stop'])) {
 	mysql_query("update vicidial_list set status = 'SP' where status !='PM'") or die(mysql_error());
 	exec('killall -9 bash');
 	exec('killall -9 gammu');
+	exec('rm -f /tmp/redial_inwork');
 	print '<div id="warning">АВАРИЙНАЯ ОСТАНОВКА</div>';
 }
 

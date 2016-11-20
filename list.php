@@ -15,7 +15,15 @@
 	<style type="text/css" media="all">@import "images/style.css";</style>
 	
 </head>
-
+ <script type="text/javascript">     
+    function PrintDiv() {    
+       var divToPrint = document.getElementById('divToPrint');
+       var popupWin = window.open('', '_blank', 'width=300,height=300');
+       popupWin.document.open();
+       popupWin.document.write('<html><body onload="window.print()">' + divToPrint.innerHTML + '</html>');
+        popupWin.document.close();
+            }
+ </script>
 <body>
 
 
@@ -118,10 +126,15 @@ $fp = fopen("php://temp/maxmemory:$size_fp", 'r+');
  rewind($fp);
 }
 if($_POST['list_code'] != '' ){
+	print '<div id="divToPrint">';
 	print_table($fp);
 	//Вывод содержимого потока
 	echo stream_get_contents($fp);
 	fclose($fp);
+	//Кнопка печати
+	print '</div><div>
+  <input type="button" value="Печать таблицы" onclick="PrintDiv();" />
+	</div>';
 	print '<hr><input type="submit" name="send_mail" value="Отправить отчет ПДС">';
 }
 //Отправка отчета ПДС 
@@ -131,7 +144,7 @@ if($_POST['list_code'] != '' && isset($_POST['send_mail'])){
 	$fp = fopen("php://temp/maxmemory:$size_fp", 'r+');
 	//Заголовки письма
 	$subject = '=?utf-8?b?'.base64_encode("Протокол вызовов системы автоматического оповещения от ".date("d-m-Y")).'?=';
-        $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
+        $headers = 'From: sirena@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
         'X-Mailer: PHP/' . phpversion();
 	$to = 'pds@utg.gazprom.ru';
