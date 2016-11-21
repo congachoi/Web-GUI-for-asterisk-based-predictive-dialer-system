@@ -59,7 +59,7 @@ if(isset($_POST['logout'])) {
  if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
 
 //Вывод ошибки при повторном запуске
-if(isset($_POST['alarm_code']) && $_POST['list_code'] && isset($inwork)) {
+if(isset($_POST['alarm_code']) && isset($_POST['list_code']) && isset($inwork)) {
 	Print '<div id="warning">СИСТЕМА В РАБОТЕ!!! <br> ДЛЯ ПОВТОРНОГО ЗАПУСКА ПРОИЗВЕДИ ОСТАНОВКУ!!!</div>';
 }
 //Остановка системы
