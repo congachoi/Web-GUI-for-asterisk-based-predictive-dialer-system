@@ -52,7 +52,7 @@ if(isset($_POST['logout'])) {
 	if(empty($status) && empty($gammu) && empty($redial)) {
 	Print '<h2>Статус оповещения: Отключено</h2>';
 	} else {
-		Print '<h2>Статус оповещения: Работа</h2>';
+		Print '<h2>Статус оповещения: <div id="warning">Работа</div></h2>';
 		$inwork = "true";
 	}
 //Обработка формы
@@ -72,7 +72,7 @@ if (isset ($_POST['stop'])) {
 }
 
 //Обзвон абонентов	 
-	if($_POST['dial'] == 'ON'  && empty($_POST['stop']) && $_POST['alarm_code'] != '' && empty($status)) {
+	if($_POST['dial'] == 'ON'  && empty($_POST['stop']) && $_POST['alarm_code'] != '' && empty($inwork)) {
 	   
 	mysql_query("update vicidial_list set status = 'NEW',called_since_last_reset = 'N',gmt_offset_now = '-5.00' where list_id ='". $_POST['list_code']."'") or die(mysql_error());
 	//Перезвонить недоступных
@@ -81,7 +81,7 @@ if (isset ($_POST['stop'])) {
 	$unchoose_count++;
 		}
 //Выбор кода оповещения		
-	if(isset($_POST['alarm_code']) && $unchoose_count < '3' && empty($_POST['stop']) && empty($status)) {	     
+	if(isset($_POST['alarm_code']) && $unchoose_count < '3' && empty($_POST['stop']) && empty($inwork)) {	     
 	 
         mysql_query("update vicidial_campaigns set survey_first_audio_file = 'go_".$_POST['alarm_code']."' where campaign_id = '92355983'") or die(mysql_error());
       $sql_data = mysql_query("select * from alarm_codes where alarm_code = '".$_POST['alarm_code']."'") or die(mysql_error());
@@ -92,9 +92,9 @@ if (isset ($_POST['stop'])) {
    
 
 //Рассылка почты
- 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($status)){
+ 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($inwork)){
 	$subject = '=?utf-8?b?'.base64_encode($header).'?=';
-        $headers = 'From: callcenter@utg.gazprom.ru' . "\r\n" .
+        $headers = 'From: sirena@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
         'X-Mailer: PHP/' . phpversion();
     $mail = mysql_query("select email from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error());    
@@ -111,7 +111,7 @@ if (isset ($_POST['stop'])) {
 	$unchoose_count++;
 		}
 //Рассылка sms
- 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($status)){
+ 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($inwork)){
 	$sql_data = mysql_query("select phone_number from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
 	    $locale='ru_RU.UTF-8';
         setlocale(LC_ALL,$locale);
@@ -134,7 +134,7 @@ if (isset ($_POST['stop'])) {
 	$unchoose_count++;
 		}		
 //Вывод ошибок
- if($unchoose_count == '3' && empty($_POST['stop']) && empty($status)){
+ if($unchoose_count == '3' && empty($_POST['stop']) && empty($inwork)){
   Print '<div id="warning">Выбери способ оповещения</div>';
   }
 	if(empty($_POST['alarm_code']) && isset($_POST['dial']) && empty($_POST['stop'])) { 
