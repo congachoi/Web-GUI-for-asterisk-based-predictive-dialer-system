@@ -12,8 +12,7 @@
 	<meta name="MSSmartTagsPreventParsing" content="true" />
 	<meta name="description" content="LGBlue Free Css Template" />
 	
-	 <META HTTP-EQUIV="refresh" CONTENT="1200">
-	<style type="text/css" media="all">@import "images/style.css";</style>
+	 <style type="text/css" media="all">@import "images/style.css";</style>
 	
 </head>
 
@@ -84,7 +83,7 @@ if (isset ($_POST['stop'])) {
    
 
 //Рассылка почты
- 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) ){
+ 	if ($_POST['mail'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($status) ){
 	$subject = '=?utf-8?b?'.base64_encode($header).'?=';
         $headers = 'From: sirena@utg.gazprom.ru' . "\r\n" .
         'Content-Type: text/html; charset=UTF-8' .
@@ -103,7 +102,7 @@ if (isset ($_POST['stop'])) {
 	$unchoose_count++;
 		}
 //Рассылка sms
- 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop'])){
+ 	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($status)){
 	$sql_data = mysql_query("select phone_number from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
 	    $locale='ru_RU.UTF-8';
         setlocale(LC_ALL,$locale);
@@ -142,6 +141,8 @@ if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_co
 	mysql_query('insert into alarm_journal values("'.date("Y-m-d 
 H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_code'].'","'.$_SERVER['REMOTE_USER'].'")') or 
 die(mysql_error());
+//Перенаправление на страницу запуска
+print '<script>window.location = "/sirena";</script>';
 }
 }		
 	if(empty($status) && empty($gammu) && empty($redial)) {
