@@ -103,7 +103,7 @@ if (isset ($_POST['stop'])) {
 		}
 //Рассылка sms
  	if($_POST['sms'] == 'ON' && $_POST['list_code'] != '' && $_POST['alarm_code'] != '' && empty($_POST['stop']) && empty($status)){
-	$sql_data = mysql_query("select phone_number from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
+	$sql_data = mysql_query("select phone_number,alt_phone from vicidial_list where list_id ='". $_POST['list_code']."'") or die(mysql_error()) ;
 	    $locale='ru_RU.UTF-8';
         setlocale(LC_ALL,$locale);
         putenv('LC_ALL='.$locale);
@@ -117,6 +117,12 @@ if (isset ($_POST['stop'])) {
               
                 exec('echo "'.$phone[1].'" >> /tmp/phones-'.$curr_date); 
                  
+                }
+                if($phone_number['alt_phone'] != '' && empty($_POST['stop']) && preg_match('/^[0-9]{12}+$/', $phone_number['alt_phone'])) {
+                $phone_alt  = preg_split("/[\9,]+/", $phone_number['alt_phone'] , 2);
+				if($phone_alt[1] != $phone[1]) {
+					exec('echo "'.$phone_alt[1].'" >> /tmp/phones-'.$curr_date); 
+					}
                 }
 				
 		}
@@ -138,8 +144,7 @@ if (isset ($_POST['stop'])) {
 //Запись в журнал
 if($unchoose_count < '3' && isset($_POST['alarm_code']) && isset($_POST['list_code']) && empty($_POST['stop'])){
 	
-	mysql_query('insert into alarm_journal values("'.date("Y-m-d 
-H:i:s").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_code'].'","'.$_SERVER['REMOTE_USER'].'")') or 
+	mysql_query('insert into alarm_journal values("'.exec("date -Im").'","'.$_SERVER['REMOTE_ADDR'].'","'.$_POST['dial'].'","'.$_POST['mail'].'","'.$_POST['sms'].'","'.$_POST['alarm_code'].'","'.$_POST['list_code'].'","'.$_SERVER['REMOTE_USER'].'")') or 
 die(mysql_error());
 //Перенаправление на страницу запуска
 print '<script>window.location = "/sirena";</script>';

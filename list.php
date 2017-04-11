@@ -101,7 +101,7 @@ $fp = fopen("php://temp/maxmemory:$size_fp", 'r+');
 		 case "SP":
 			$status = "Остановлено";
 			break;	 
-         case "":
+         case "ADD":
             $status = "Не обработан";
             break;
          case "AA":

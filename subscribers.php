@@ -109,7 +109,7 @@ if (isset($_FILES["leadfile"]) && $_FILES["leadfile"]["type"] != "application/vn
 					//Коммит строки в базу
 					if ($notdup && $isnumber){
 						//print $_POST['listtoadd']."  ". $phone_number ."  ". $alt_number ."  ". $leads[1] . $leads[3]. "<br>";
-						mysql_query('insert into vicidial_list values("","","","","","","'.$_POST['listtoadd'].'","-5.00","N","1","'.$phone_number.'","","'.$leads[1].'","","","","","","","","","","","","","'.$alt_number.'","'.$leads[3].'","","","","0","","","","")') or die(mysql_error());
+						mysql_query('insert into vicidial_list values("","","","","","","'.$_POST['listtoadd'].'","-5.00","N","1","'.$phone_number.'","","'.$leads[1].'","","","","","","","","","","","","","'.$alt_number.'","'.$leads[3].'","","","","0","","0","ADD","")') or die(mysql_error());
 					}
 			}
 			unlink("/tmp/".$new_filename);
