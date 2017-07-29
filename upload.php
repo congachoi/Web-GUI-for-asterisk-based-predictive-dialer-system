@@ -42,6 +42,7 @@ mysql_select_db("asterisk") or die(mysql_error());
  $target_file = $target_dir ."go_".$target_name[0].".wav";
  $uploadOk = 1;
 
+
 // Проверка дубликата 
 if (file_exists($target_file) && empty($_POST['delete_code'])) {
     echo '<div id="warning">Такой файл уже существует!</div>';
@@ -68,7 +69,7 @@ if ($uploadOk == 0 && empty($_POST['delete_code'])) {
     if (file_exists($target_file)) {
         echo "<h2>Файл ".$target_name[0]. " был добавлен.</h2>";
         // Коммит в базу
-        mysql_query('insert into alarm_codes values("'.$target_name[0].'","'.$_POST['header'].'","'.$_POST['message'].'")') or die(mysql_error());  
+        mysql_query('insert into alarm_codes values("'.$target_name[0].'","'.$_POST['header'].'","'.$_POST['message'].'","'.$_POST['broadcast'].'")') or die(mysql_error());  
     } else {
         echo '<div id="warning">Ошибка при конвертации файла!</div>';
     }
@@ -95,7 +96,7 @@ if ($uploadOk == 0 && empty($_POST['delete_code'])) {
         print "return confirm('Вы уверены?');";
                 print '">';
 Print "<table border cellpadding=3 style=width:100% algin=center>";
-Print "<th>№</th><th>Файл</th><th>Тема сообщения</th><th>Текст сообщения</th><th>Удалить</th>";
+Print "<th>№</th><th>Файл</th><th>Тема сообщения</th><th>Текст сообщения</th><th>Шир. вещ.</th><th>Удалить</th>";
  while($alarm = mysql_fetch_array( $sql_data )) 
  { 
 	 
@@ -104,6 +105,13 @@ Print "<th>№</th><th>Файл</th><th>Тема сообщения</th><th>Те
 	   Print "<td><a href=/sounds/go_".$alarm['alarm_code'].".wav>".$alarm['alarm_code']."</a> </td> ";
 	    Print "<td>".$alarm['header']."</td> ";
 	    Print "<td>".$alarm['message']."</td> ";
+	    
+if ($alarm['broadcast'] == "TRUE"){
+	$broadcast="ДА";
+}else{
+	$broadcast="НЕТ";
+}
+	    Print "<td>".$broadcast."</td> ";
 	     Print '<td><input type="checkbox" name="delete_code['.$number.']" value="'.$alarm['alarm_code'].'" /></td></tr>'; 
          $number++;
  }
@@ -119,15 +127,20 @@ mysql_close($mysql);
 <br>GO_test.mp3
 <br>CH-GO-01-01-16.wav
 <br>Точка "." в названии файла - зарезервированный символ
+<br>Максимальный размер файла: 2Мб
 </h3>
 <hr><br>
-  <h2>Настройки текстового оповещения</h2>
+  <h2>Настройки кода оповещения</h2>
 <hr>
 	<h2>Тема сообщения:</h2>
 <input type="text" name="header" value="" maxlength="60" size="64">
 <h2>Текст сообщения:</h2>
 <textarea name="message" rows="5" maxlength="400" cols="64"></textarea>
 <h3>Максимальное количество символов: 400</h3>
+<h2>Широковещательное сообщение:</h2>
+  <input type="radio" name="broadcast" value="TRUE" > ДА<br>
+  <input type="radio" name="broadcast" value="FALSE" checked> НЕТ<br>
+ <hr> 
  <table border=0 cellpadding=4 algin=center > 
   <TR> 
 	  <TD BGCOLOR="#FF0000"><input type="submit" value="ОТПРАВИТЬ" name="Upload"></TD>

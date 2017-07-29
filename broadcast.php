@@ -27,7 +27,7 @@
 	</div>
 	<div id="main">
 		<div class="center">
-<div align=center><h2>Запуск системы автоматического внутреннего оповещения</h2></div>
+<div align=center><h2>Запуск системы широковещательного оповещения</h2></div>
 <hr>
  <?php
  //Mysql
@@ -82,7 +82,7 @@ if(isset($_POST['alarm_code']) && empty($_POST['stop'])){
 <?php 
  //Список файлов
  
-$sql_data = mysql_query("select * from alarm_codes") or die(mysql_error());
+$sql_data = mysql_query("select * from alarm_codes where broadcast = 'TRUE'") or die(mysql_error());
    while($alarm = mysql_fetch_array( $sql_data ))
  { 
 	 
@@ -107,7 +107,7 @@ $sql_data = mysql_query("select * from alarm_codes") or die(mysql_error());
   
   
   
-<div class="boxads">Система внутреннего оповещения.
+<div class="boxads">Система широковещательного оповещения.
  Версия 1.1 <br> <b>Источники информации: </b><br>&#9679; Шаблоны CSS -<a href="http://www.free-css-templates.com">David Herreman </a> 
 <br><b>Среда разработки: </b><br>&#9679; Geany.<br> 2016г. ,СЦС. <a href="mailto:samohin-iv@utg.gazprom.ru">Самохин И.В.</a></div>
 			</div>

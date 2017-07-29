@@ -29,14 +29,7 @@
 <div align=center><h2>Запуск системы автоматического оповещения</h2></div>
 <hr>
  <?php
- //Выход из системы	
-if(isset($_POST['logout'])) {
 
-    header('WWW-Authenticate: Basic realm="Sirena"');
-    header('HTTP/1.0 401 Unauthorized');
-    echo "<h2>Необходимо указать пользовательские данные</h2>";
-
-}
  //Mysql
  $mysql = mysql_connect("localhost", "root", "vicidialnow") or die(mysql_error());
  mysql_select_db("asterisk") or die(mysql_error());
@@ -224,7 +217,7 @@ print "<TD BGCOLOR=#FA0008><h2>Нет связи с сервером<h2></TD>";
 	<option value="">Выбор...</option>
 <?php 
  //Список файлов
- $sql_data = mysql_query("select * from alarm_codes") or die(mysql_error());
+ $sql_data = mysql_query("select * from alarm_codes where broadcast != 'TRUE'") or die(mysql_error());
    while($alarm = mysql_fetch_array( $sql_data ))
  { 
 	 
@@ -296,7 +289,7 @@ print "<TD BGCOLOR=#FA0008><h2>Нет связи с сервером<h2></TD>";
 			<img src="images/arrow.gif" alt="" /> <a href="/sirena/upload.php" target="_blank">Добавление файлов</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="/sirena/admin/settings.php" target="_blank">Настройки системы</a> <br />
 			<img src="images/arrow.gif" alt="" /> <a href="/sirena/journal.php" target="_blank">Журнал доступа</a> <br />
-			<input type="submit" name="logout" value="Выход">
+			
 			</div>
 			</div>
 		</div>
